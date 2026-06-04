@@ -1,0 +1,55 @@
+declare module "lucide-react" {
+  import { FC } from "react"
+  interface IconProps { size?: number | string; color?: string; strokeWidth?: number; className?: string; style?: Record<string, any> }
+  type Icon = FC<IconProps>
+  type LucideIcon = Icon
+  export const Activity: Icon
+  export const AlertTriangle: Icon
+  export const ArrowLeft: Icon
+  export const Ban: Icon
+  export const BarChart3: Icon
+  export const Building2: Icon
+  export const Calendar: Icon
+  export const Check: Icon
+  export const CheckCircle: Icon
+  export const ChevronLeft: Icon
+  export const ChevronRight: Icon
+  export const Clock: Icon
+  export const CreditCard: Icon
+  export const Database: Icon
+  export const DollarSign: Icon
+  export const Download: Icon
+  export const Edit: Icon
+  export const Eye: Icon
+  export const EyeOff: Icon
+  export const FileSpreadsheet: Icon
+  export const HardDrive: Icon
+  export const History: Icon
+  export const LayoutDashboard: Icon
+  export const LogIn: Icon
+  export const LogOut: Icon
+  export const Megaphone: Icon
+  export const Menu: Icon
+  export const Package: Icon
+  export const PieChart: Icon
+  export const Plus: Icon
+  export const Receipt: Icon
+  export const RefreshCw: Icon
+  export const RotateCcw: Icon
+  export const ScrollText: Icon
+  export const Search: Icon
+  export const Send: Icon
+  export const Server: Icon
+  export const Settings2: Icon
+  export const Shield: Icon
+  export const ShoppingBag: Icon
+  export const Target: Icon
+  export const Trash2: Icon
+  export const TrendingDown: Icon
+  export const TrendingUp: Icon
+  export const User: Icon
+  export const UserCircle: Icon
+  export const Users: Icon
+  export const X: Icon
+  export const XCircle: Icon
+}
