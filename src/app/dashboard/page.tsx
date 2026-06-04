@@ -29,7 +29,7 @@ export default function DashboardPage() {
           <StatCard title="Total Users" value={overview?.users.total ?? "—"} icon={Users} />
           <StatCard title="Orders" value={overview?.business.orders ?? "—"} icon={ShoppingBag}
             description={`${overview?.business.orders_this_month ?? 0} this month`} />
-          <StatCard title="Revenue" value={overview ? `₦${(overview.money.payments_collected / 1e6).toFixed(1)}M` : "—"} icon={DollarSign} />
+          <StatCard title="Revenue" value={overview ? `₦${((overview.money.payments_collected || 0) / 1e6).toFixed(1)}M` : "—"} icon={DollarSign} />
           <StatCard title="Active Subs" value={overview?.business.active_subscriptions ?? "—"} icon={CreditCard} />
           <StatCard title="Clients" value={overview?.business.clients ?? "—"} icon={Users} />
           <StatCard title="Inventory" value={overview?.business.inventory_items ?? "—"} icon={Package} />
@@ -39,12 +39,12 @@ export default function DashboardPage() {
 
         {advanced && (
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-            <StatCard title="MRR" value={`₦${(advanced.revenue.mrr / 1e3).toFixed(0)}K`} icon={TrendingUp}
-              trend={{ value: advanced.revenue.growth_rate, positive: advanced.revenue.growth_rate >= 0 }} />
-            <StatCard title="ARR" value={`₦${(advanced.revenue.arr / 1e6).toFixed(1)}M`} icon={TrendingUp} />
-            <StatCard title="Churn Rate" value={`${advanced.subscriptions.churn_rate}%`} icon={TrendingDown}
-              trend={{ value: advanced.subscriptions.churn_rate, positive: false }} />
-            <StatCard title="Profit Margin" value={`${advanced.financials.profit_margin}%`} icon={Activity} />
+            <StatCard title="MRR" value={`₦${((advanced.revenue.mrr || 0) / 1e3).toFixed(0)}K`} icon={TrendingUp}
+              trend={{ value: advanced.revenue.growth_rate || 0, positive: (advanced.revenue.growth_rate || 0) >= 0 }} />
+            <StatCard title="ARR" value={`₦${((advanced.revenue.arr || 0) / 1e6).toFixed(1)}M`} icon={TrendingUp} />
+            <StatCard title="Churn Rate" value={`${advanced.subscriptions.churn_rate || 0}%`} icon={TrendingDown}
+              trend={{ value: advanced.subscriptions.churn_rate || 0, positive: false }} />
+            <StatCard title="Profit Margin" value={`${advanced.financials.profit_margin || 0}%`} icon={Activity} />
           </div>
         )}
 

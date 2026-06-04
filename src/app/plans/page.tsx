@@ -22,8 +22,8 @@ export default function PlansPage() {
 
   const createMutation = useMutation({
     mutationFn: () => plansApi.create({
-      name: form.name, price: Number(form.price), max_staff: Number(form.max_staff),
-      max_clients: Number(form.max_clients), description: form.description,
+      name: form.name, price: Number(form.price) || 0, max_staff: Number(form.max_staff) || 0,
+      max_clients: Number(form.max_clients) || 0, description: form.description,
       features: form.features.split("\n").filter(Boolean), is_active: form.is_active,
     }),
     onSuccess: () => { qc.invalidateQueries({ queryKey: ["plans"] }); resetForm() },
@@ -31,8 +31,8 @@ export default function PlansPage() {
 
   const updateMutation = useMutation({
     mutationFn: () => plansApi.update(editing!.id, {
-      name: form.name, price: Number(form.price), max_staff: Number(form.max_staff),
-      max_clients: Number(form.max_clients), description: form.description,
+      name: form.name, price: Number(form.price) || 0, max_staff: Number(form.max_staff) || 0,
+      max_clients: Number(form.max_clients) || 0, description: form.description,
       features: form.features.split("\n").filter(Boolean), is_active: form.is_active,
     }),
     onSuccess: () => { qc.invalidateQueries({ queryKey: ["plans"] }); resetForm() },

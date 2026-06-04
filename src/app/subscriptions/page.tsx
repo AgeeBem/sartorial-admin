@@ -30,7 +30,7 @@ export default function SubscriptionsPage() {
 
   const overrideMutation = useMutation({
     mutationFn: () => subsApi.override({
-      subscription_id: Number(overrideForm.subscription_id),
+      subscription_id: Number(overrideForm.subscription_id) || 0,
       price: overrideForm.price ? Number(overrideForm.price) : undefined,
       status: overrideForm.status || undefined,
       end_date: overrideForm.end_date || undefined,

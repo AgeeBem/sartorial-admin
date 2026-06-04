@@ -24,7 +24,7 @@ export default function ExpensesPage() {
         columns={[
           { key: "title", header: "Title" },
           { key: "organization", header: "Organization", render: (e: any) => e.organization_email || e.organization || "—" },
-          { key: "amount", header: "Amount", render: (e: any) => formatCurrency(e.amount) },
+          { key: "amount", header: "Amount", render: (e: any) => formatCurrency(e.amount || 0) },
           { key: "status", header: "Status", render: (e: any) => <StatusBadge status={e.status} /> },
           { key: "category", header: "Category" },
           { key: "date", header: "Date", render: (e: any) => formatDate(e.date) },

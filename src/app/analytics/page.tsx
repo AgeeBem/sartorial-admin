@@ -25,12 +25,12 @@ export default function AnalyticsPage() {
       <PageHeader title="Analytics" description="Platform-wide analytics and insights" />
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <StatCard title="MRR" value={`₦${(advanced.revenue.mrr / 1e3).toFixed(0)}K`} icon={TrendingUp}
-          trend={{ value: advanced.revenue.growth_rate, positive: advanced.revenue.growth_rate >= 0 }} />
-        <StatCard title="ARR" value={`₦${(advanced.revenue.arr / 1e6).toFixed(1)}M`} icon={DollarSign} />
-        <StatCard title="Churn Rate" value={`${advanced.subscriptions.churn_rate}%`} icon={TrendingDown}
-          trend={{ value: advanced.subscriptions.churn_rate, positive: false }} />
-        <StatCard title="Avg Revenue/User" value={formatCurrency(advanced.revenue.arpu)} icon={Target} />
+        <StatCard title="MRR" value={`₦${((advanced.revenue.mrr || 0) / 1e3).toFixed(0)}K`} icon={TrendingUp}
+          trend={{ value: advanced.revenue.growth_rate || 0, positive: (advanced.revenue.growth_rate || 0) >= 0 }} />
+        <StatCard title="ARR" value={`₦${((advanced.revenue.arr || 0) / 1e6).toFixed(1)}M`} icon={DollarSign} />
+        <StatCard title="Churn Rate" value={`${advanced.subscriptions.churn_rate || 0}%`} icon={TrendingDown}
+          trend={{ value: advanced.subscriptions.churn_rate || 0, positive: false }} />
+        <StatCard title="Avg Revenue/User" value={formatCurrency(advanced.revenue.arpu || 0)} icon={Target} />
       </div>
 
       <div className="grid gap-4 lg:grid-cols-3">
@@ -61,7 +61,7 @@ export default function AnalyticsPage() {
             ].map(([label, val]) => (
               <div key={label} className="flex justify-between text-sm">
                 <span className="text-slate-600">{label}</span>
-                <span className="font-semibold">{typeof val === "number" ? val.toLocaleString() : val}</span>
+                <span className="font-semibold">{typeof val === "number" ? val.toLocaleString() : val || "—"}</span>
               </div>
             ))}
           </CardContent>
@@ -90,11 +90,12 @@ export default function AnalyticsPage() {
           <CardContent>
             <div className="flex items-end gap-2 h-40">
               {trends.monthly_revenue.slice(-12).map((m: any, i: number) => {
-                const max = Math.max(...trends.monthly_revenue.map((r: any) => r.total));
-                const height = max > 0 ? (m.total / max) * 100 : 0;
+                const totals = trends.monthly_revenue.map((r: any) => r.total || 0);
+                const max = totals.length > 0 ? Math.max(...totals) : 0;
+                const height = max > 0 ? ((m.total || 0) / max) * 100 : 0;
                 return (
                   <div key={i} className="flex-1 flex flex-col items-center gap-1">
-                    <span className="text-[10px] text-slate-500">₦{(m.total / 1e3).toFixed(0)}K</span>
+                    <span className="text-[10px] text-slate-500">₦{((m.total || 0) / 1e3).toFixed(0)}K</span>
                     <div className="w-full rounded-t bg-indigo-500/80" style={{ height: `${Math.max(height, 4)}%` }} />
                     <span className="text-[10px] text-slate-600">{m.month?.slice(0, 3) || m.date?.slice(0, 7) || i + 1}</span>
                   </div>
