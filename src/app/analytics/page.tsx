@@ -9,7 +9,7 @@ import { AppShell } from "@/components/layout/app-shell"
 import { formatCurrency } from "@/lib/utils"
 import {
   TrendingUp, TrendingDown, Users, DollarSign, Activity,
-  CreditCard, Target, PieChart
+  CreditCard, Target
 } from "lucide-react"
 
 export default function AnalyticsPage() {
@@ -30,18 +30,18 @@ export default function AnalyticsPage() {
         <StatCard title="ARR" value={`₦${((advanced.revenue.arr || 0) / 1e6).toFixed(1)}M`} icon={DollarSign} />
         <StatCard title="Churn Rate" value={`${advanced.subscriptions.churn_rate || 0}%`} icon={TrendingDown}
           trend={{ value: advanced.subscriptions.churn_rate || 0, positive: false }} />
-        <StatCard title="Avg Revenue/User" value={formatCurrency(advanced.revenue.arpu || 0)} icon={Target} />
+        <StatCard title="Total Revenue" value={formatCurrency(advanced.revenue.total_revenue)} icon={Target} />
       </div>
 
       <div className="grid gap-4 lg:grid-cols-3">
         <Card><CardHeader><CardTitle className="text-sm font-medium text-slate-600">Revenue Breakdown</CardTitle></CardHeader>
           <CardContent className="space-y-3">
             {[
-              ["Subscription Revenue", formatCurrency(advanced.revenue.subscription_revenue)],
-              ["One-time Revenue", formatCurrency(advanced.revenue.one_time_revenue)],
               ["Total Revenue", formatCurrency(advanced.revenue.total_revenue)],
+              ["This Month", formatCurrency(advanced.revenue.this_month)],
+              ["Previous Month", formatCurrency(advanced.revenue.prev_month)],
+              ["MRR", formatCurrency(advanced.revenue.mrr)],
               ["Growth Rate", `${advanced.revenue.growth_rate}%`],
-              ["MRR Growth", `${advanced.revenue.mrr_growth}%`],
             ].map(([label, val]) => (
               <div key={label} className="flex justify-between text-sm">
                 <span className="text-slate-600">{label}</span>
@@ -53,11 +53,12 @@ export default function AnalyticsPage() {
         <Card><CardHeader><CardTitle className="text-sm font-medium text-slate-600">Subscription Metrics</CardTitle></CardHeader>
           <CardContent className="space-y-3">
             {[
-              ["Active Subscriptions", advanced.subscriptions.active],
-              ["Expired", advanced.subscriptions.expired],
-              ["Trialing", advanced.subscriptions.trialing],
+              ["Total Subscriptions", advanced.subscriptions.total],
+              ["Active", advanced.subscriptions.active],
+              ["Free", advanced.subscriptions.free],
+              ["Churned", advanced.subscriptions.churned],
               ["Churn Rate", `${advanced.subscriptions.churn_rate}%`],
-              ["Lifetime Value", formatCurrency(advanced.subscriptions.ltv)],
+              ["Conversion Rate", `${advanced.subscriptions.conversion_rate}%`],
             ].map(([label, val]) => (
               <div key={label} className="flex justify-between text-sm">
                 <span className="text-slate-600">{label}</span>
@@ -69,10 +70,11 @@ export default function AnalyticsPage() {
         <Card><CardHeader><CardTitle className="text-sm font-medium text-slate-600">Financial Health</CardTitle></CardHeader>
           <CardContent className="space-y-3">
             {[
+              ["Total Order Value", formatCurrency(advanced.financials.total_order_value)],
+              ["Payments Collected", formatCurrency(advanced.financials.total_payments_collected)],
+              ["Total Expenses", formatCurrency(advanced.financials.total_expenses)],
+              ["Profit", formatCurrency(advanced.financials.profit)],
               ["Profit Margin", `${advanced.financials.profit_margin}%`],
-              ["Operating Costs", formatCurrency(advanced.financials.operating_costs)],
-              ["Gross Revenue", formatCurrency(advanced.financials.gross_revenue)],
-              ["Net Revenue", formatCurrency(advanced.financials.net_revenue)],
               ["Outstanding Balance", formatCurrency(advanced.financials.outstanding_balance)],
             ].map(([label, val]) => (
               <div key={label} className="flex justify-between text-sm">
@@ -84,20 +86,20 @@ export default function AnalyticsPage() {
         </Card>
       </div>
 
-      {trends && trends.monthly_revenue && trends.monthly_revenue.length > 0 && (
+      {trends && trends.order_payments && trends.order_payments.length > 0 && (
         <Card>
-          <CardHeader><CardTitle className="text-base">Revenue Trend (Monthly)</CardTitle></CardHeader>
+          <CardHeader><CardTitle className="text-base">Order Payments (Monthly)</CardTitle></CardHeader>
           <CardContent>
             <div className="flex items-end gap-2 h-40">
-              {trends.monthly_revenue.slice(-12).map((m: any, i: number) => {
-                const totals = trends.monthly_revenue.map((r: any) => r.total || 0);
+              {trends.order_payments.slice(-12).map((m: any, i: number) => {
+                const totals = trends.order_payments.map((r: any) => Number(r.amount) || 0);
                 const max = totals.length > 0 ? Math.max(...totals) : 0;
-                const height = max > 0 ? ((m.total || 0) / max) * 100 : 0;
+                const height = max > 0 ? ((Number(m.amount) || 0) / max) * 100 : 0;
                 return (
                   <div key={i} className="flex-1 flex flex-col items-center gap-1">
-                    <span className="text-[10px] text-slate-500">₦{((m.total || 0) / 1e3).toFixed(0)}K</span>
+                    <span className="text-[10px] text-slate-500">₦{((Number(m.amount) || 0) / 1e3).toFixed(0)}K</span>
                     <div className="w-full rounded-t bg-indigo-500/80" style={{ height: `${Math.max(height, 4)}%` }} />
-                    <span className="text-[10px] text-slate-600">{m.month?.slice(0, 3) || m.date?.slice(0, 7) || i + 1}</span>
+                    <span className="text-[10px] text-slate-600">{m.month?.slice(0, 3) || ""}</span>
                   </div>
                 )
               })}

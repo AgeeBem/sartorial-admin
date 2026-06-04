@@ -2,7 +2,7 @@ import axios from "axios"
 import type {
   ActivityEvent, AdminOverview, AdvancedAnalytics, Announcement, AuditLogEntry,
   CeleryStatus, GrowthTrend, LoginHistoryEntry, Organization, PaginatedResponse,
-  Plan, PlanDistribution, RevenueTrend, StorageUsage, Subscription, SystemHealth,
+  Plan, PlanDistribution, RevenueTrends, StorageUsage, Subscription, SystemHealth,
   TopOrganization, Transaction,
 } from "./types"
 
@@ -53,11 +53,11 @@ export const analyticsApi = {
       "/analytics/top-organizations/", { params: { metric, limit } }
     ).then((r) => r.data),
   growthTrend: (params?: Record<string, string>) =>
-    api.get<{ period: any; trends: GrowthTrend[] }>("/analytics/organization-growth/", { params }).then((r) => r.data),
+    api.get<any>("/analytics/organization-growth/", { params }).then((r) => r.data),
   revenueTrends: (params?: Record<string, string>) =>
-    api.get("/analytics/revenue-trends/", { params }).then((r) => r.data),
+    api.get<RevenueTrends>("/analytics/revenue-trends/", { params }).then((r) => r.data),
   trends: (params?: Record<string, string>) =>
-    api.get("/analytics/revenue-trends/", { params }).then((r) => r.data),
+    api.get<RevenueTrends>("/analytics/revenue-trends/", { params }).then((r) => r.data),
   planDistribution: () =>
     api.get<{ plan_distribution: PlanDistribution[] }>("/analytics/plan-distribution/").then((r) => r.data),
 }

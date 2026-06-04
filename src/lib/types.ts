@@ -1,15 +1,15 @@
 export interface AdminOverview {
-  users: { total: number; super_admins: number; organizations: number; staff: number; inactive: number; exited_staff: number }
-  business: { clients: number; orders: number; orders_this_month: number; vendors: number; inventory_items: number; active_subscriptions: number; expired_subscriptions: number }
-  money: { order_value: number; payments_collected: number; expenses: number; subscription_revenue: number }
-  operations: { low_stock_items: number; overdue_orders: number; pending_orders: number; unpaid_bills: number }
+  users: { total: number; super_admins: number; organizations: number; staff: number; inactive: number }
+  business: { clients: number; orders: number; orders_this_month: number; active_subscriptions: number; expired_subscriptions: number }
+  money: { order_value: number; payments_collected: number; expenses: number; transactions_successful: number }
+  operations: { low_stock_items: number; overdue_orders: number; pending_orders: number }
 }
 
 export interface AdvancedAnalytics {
-  revenue: { total_revenue: number; this_month: number; prev_month: number; mrr: number; mrr_growth: number; arr: number; growth_rate: number; arpu: number; subscription_revenue: number; one_time_revenue: number }
+  revenue: { total_revenue: number; this_month: number; prev_month: number; mrr: number; arr: number; growth_rate: number }
   organizations: { total: number; active: number; inactive: number; this_month_new: number; growth_rate: number }
-  subscriptions: { total: number; active: number; expired: number; trialing: number; churned: number; churn_rate: number; conversion_rate: number; free: number; past_due: number; ltv: number }
-  financials: { total_order_value: number; total_payments_collected: number; total_expenses: number; profit: number; profit_margin: number; operating_costs: number; gross_revenue: number; net_revenue: number; outstanding_balance: number }
+  subscriptions: { total: number; active: number; churned: number; churn_rate: number; conversion_rate: number; free: number; past_due: number }
+  financials: { total_order_value: number; total_payments_collected: number; total_expenses: number; profit: number; profit_margin: number; outstanding_balance: number }
   operations: { total_clients: number; total_orders: number; pending_orders: number; overdue_orders: number; completed_orders: number; in_progress_orders: number; total_inventory: number; low_stock_items: number }
 }
 
@@ -73,8 +73,11 @@ export interface GrowthTrend {
   month: string; new: number; cumulative: number
 }
 
-export interface RevenueTrend {
-  month: string; revenue: number; transactions: number
+export interface RevenueTrends {
+  period: { start: string; end: string }
+  subscription_revenue: Array<{ month: string; amount: number }>
+  order_payments: Array<{ month: string; amount: number }>
+  expenses: Array<{ month: string; amount: number }>
 }
 
 export interface PlanDistribution {

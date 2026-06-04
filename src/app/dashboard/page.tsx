@@ -51,10 +51,9 @@ export default function DashboardPage() {
   const { data: trends } = useQuery({ queryKey: ["analytics-trends"], queryFn: () => analyticsApi.trends() })
   const { data: distribution } = useQuery({ queryKey: ["analytics-distribution"], queryFn: analyticsApi.planDistribution })
 
-  const revenueData = trends?.monthly_revenue?.slice(-12).map((m: any) => ({
+  const revenueData = trends?.order_payments?.slice(-12).map((m: any) => ({
     month: m.month?.slice(0, 3) || "",
-    revenue: Number(m.total) || 0,
-    transactions: Number(m.transactions) || 0,
+    revenue: Number(m.amount) || 0,
   })) || []
 
   const planData = ((distribution as any)?.plan_distribution || (distribution as any)?.plans || []).map((p: any) => ({
@@ -64,10 +63,9 @@ export default function DashboardPage() {
 
   const subPieData = advanced ? [
     { name: "Active", value: advanced.subscriptions.active },
-    { name: "Expired", value: advanced.subscriptions.expired },
-    { name: "Trialing", value: advanced.subscriptions.trialing },
     { name: "Free", value: advanced.subscriptions.free },
     { name: "Past Due", value: advanced.subscriptions.past_due },
+    { name: "Churned", value: advanced.subscriptions.churned },
   ].filter(d => d.value > 0) : []
 
   return (
@@ -87,7 +85,7 @@ export default function DashboardPage() {
           <StatCard title="Revenue" value={overview ? `₦${((overview.money.payments_collected || 0) / 1e6).toFixed(1)}M` : "—"} icon={DollarSign} />
           <StatCard title="Active Subs" value={overview?.business.active_subscriptions ?? "—"} icon={CreditCard} />
           <StatCard title="Clients" value={overview?.business.clients ?? "—"} icon={Users} />
-          <StatCard title="Inventory" value={overview?.business.inventory_items ?? "—"} icon={Package} />
+          <StatCard title="Inventory" value={advanced?.operations.total_inventory ?? "—"} icon={Package} />
           <StatCard title="Low Stock" value={overview?.operations.low_stock_items ?? "—"} icon={AlertTriangle}
             className={overview?.operations.low_stock_items ? "border-red-200 bg-red-50" : ""} />
         </div>
@@ -177,7 +175,7 @@ export default function DashboardPage() {
               {[
                 { label: "Pending Orders", value: overview?.operations.pending_orders, icon: Clock },
                 { label: "Overdue Orders", value: overview?.operations.overdue_orders, icon: AlertTriangle },
-                { label: "Unpaid Bills", value: overview?.operations.unpaid_bills, icon: DollarSign },
+                { label: "Unpaid Bills", value: health?.summary.unpaid_bills, icon: DollarSign },
                 { label: "Expired Subs", value: overview?.business.expired_subscriptions, icon: CreditCard },
               ].map((item) => (
                 <div key={item.label} className="flex items-center justify-between">
@@ -194,15 +192,15 @@ export default function DashboardPage() {
             <CardHeader><CardTitle className="text-sm font-medium text-slate-600">Financial Breakdown</CardTitle></CardHeader>
             <CardContent className="space-y-3">
               {(advanced ? [
-                { label: "Gross Revenue", value: formatCurrency(advanced.financials.gross_revenue) },
-                { label: "Net Revenue", value: formatCurrency(advanced.financials.net_revenue) },
-                { label: "Operating Costs", value: formatCurrency(advanced.financials.operating_costs) },
+                { label: "Total Order Value", value: formatCurrency(advanced.financials.total_order_value) },
+                { label: "Payments Collected", value: formatCurrency(advanced.financials.total_payments_collected) },
+                { label: "Total Expenses", value: formatCurrency(advanced.financials.total_expenses) },
                 { label: "Outstanding", value: formatCurrency(advanced.financials.outstanding_balance) },
               ] : [
                 { label: "Order Value", value: `₦${(overview?.money.order_value ?? 0).toLocaleString()}` },
                 { label: "Payments Collected", value: `₦${(overview?.money.payments_collected ?? 0).toLocaleString()}` },
                 { label: "Expenses", value: `₦${(overview?.money.expenses ?? 0).toLocaleString()}` },
-                { label: "Sub Revenue", value: `₦${(overview?.money.subscription_revenue ?? 0).toLocaleString()}` },
+                { label: "Transactions", value: `₦${(overview?.money.transactions_successful ?? 0).toLocaleString()}` },
               ]).map((item: any) => (
                 <div key={item.label} className="flex justify-between text-sm">
                   <span className="text-slate-600">{item.label}</span>
@@ -227,8 +225,8 @@ export default function DashboardPage() {
                 <span className="text-sm font-semibold">{overview?.business.orders ?? "—"}</span>
               </div>
               <div className="flex items-center justify-between">
-                <span className="text-sm text-slate-600">Vendors</span>
-                <span className="text-sm font-semibold">{overview?.business.vendors ?? "—"}</span>
+                <span className="text-sm text-slate-600">Inventory Items</span>
+                <span className="text-sm font-semibold">{advanced?.operations.total_inventory ?? "—"}</span>
               </div>
             </CardContent>
           </Card>
