@@ -33,8 +33,8 @@ export function formatDateTime(date: string | Date | null | undefined): string {
   }).format(new Date(date))
 }
 
-export function formatNumber(num: number): string {
-  return new Intl.NumberFormat("en-US").format(num)
+export function formatNumber(num: number | string): string {
+  return new Intl.NumberFormat("en-US").format(Number(num))
 }
 
 export function getStatusColor(status?: string): string {
