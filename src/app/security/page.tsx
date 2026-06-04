@@ -58,7 +58,7 @@ export default function SecurityPage() {
           { key: "target", header: "Target User", render: (s: any) => s.target_email || s.target_user || s.organization || "—" },
           { key: "is_active", header: "Active", render: (s: any) => <StatusBadge status={s.is_active ? "active" : "ended"} /> },
           { key: "started_at", header: "Started", render: (s: any) => formatDateTime(s.started_at || s.created_at) },
-          { key: "ended_at", header: "Ended", render: (s: any) => s.ended_at ? formatDateTime(s.ended_at) : <span className="text-slate-400">—</span> },
+          { key: "ended_at", header: "Ended", render: (s: any) => s.ended_at ? formatDateTime(s.ended_at) : <span className="text-slate-500">—</span> },
           { key: "actions", header: "Actions", render: (s: any) => s.is_active ? (
             <Button variant="ghost" size="sm" onClick={() => revokeMutation.mutate(s.id)}>
               <Ban size={14} className="text-red-500" />

@@ -13,7 +13,7 @@ export default function SystemPage() {
   const { data: alerts } = useQuery({ queryKey: ["system-alerts"], queryFn: () => systemApi.alerts() })
 
   if (isLoading) return <AppShell><div className="h-8 w-48 animate-pulse rounded bg-slate-100" /></AppShell>
-  if (!health) return <AppShell><p className="text-slate-500">No system data available</p></AppShell>
+  if (!health) return <AppShell><p className="text-slate-600">No system data available</p></AppShell>
 
   return (
     <AppShell>
@@ -92,7 +92,7 @@ export default function SystemPage() {
                     <StatusBadge status={a.severity || a.level || "info"} />
                     <span>{a.message || a.title}</span>
                   </div>
-                  <span className="text-xs text-slate-400">{formatDate(a.created_at || a.timestamp)}</span>
+                  <span className="text-xs text-slate-500">{formatDate(a.created_at || a.timestamp)}</span>
                 </div>
               ))}
             </div>

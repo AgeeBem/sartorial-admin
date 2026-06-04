@@ -37,7 +37,7 @@ export default function ExportsPage() {
                 <div className="rounded-lg bg-indigo-100 p-3"><exp.icon size={24} className="text-indigo-600" /></div>
                 <div>
                   <h3 className="text-sm font-semibold">{exp.label}</h3>
-                  <p className="text-xs text-slate-500 mt-1">{exp.desc}</p>
+                  <p className="text-xs text-slate-600 mt-1">{exp.desc}</p>
                 </div>
                 <Button size="sm" className="w-full" onClick={() => exp.mutation.mutateAsync().then(r => downloadCSV(r, exp.filename))} disabled={exp.mutation.isPending}>
                   <Download size={14} className="mr-1" /> {exp.mutation.isPending ? "Exporting..." : "Download CSV"}

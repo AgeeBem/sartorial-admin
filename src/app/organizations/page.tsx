@@ -35,13 +35,13 @@ export default function OrganizationsPage() {
 
   const columns = [
     { key: "email", header: "Email", render: (o: Organization) => (
-      <div><p className="font-medium">{o.email}</p><p className="text-xs text-slate-500">{o.full_name}</p></div>
+      <div><p className="font-medium">{o.email}</p>                    <p className="text-xs text-slate-600">{o.full_name}</p></div>
     )},
     { key: "is_active", header: "Status", render: (o: Organization) => <StatusBadge status={o.is_active ? "active" : "inactive"} /> },
     { key: "subscription_plan", header: "Plan", render: (o: Organization) => (
       <span className="text-sm">{o.subscription_plan || "—"}</span>
     )},
-    { key: "subscription_status", header: "Sub Status", render: (o: Organization) => o.subscription_status ? <StatusBadge status={o.subscription_status} /> : <span className="text-slate-400">—</span> },
+    { key: "subscription_status", header: "Sub Status", render: (o: Organization) => o.subscription_status ? <StatusBadge status={o.subscription_status} /> :               <span className="text-slate-500">—</span> },
     { key: "staff_count", header: "Staff" },
     { key: "client_count", header: "Clients" },
     { key: "order_count", header: "Orders" },

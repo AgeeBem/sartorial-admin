@@ -20,7 +20,7 @@ export default function DashboardPage() {
       <div className="space-y-6">
         <div>
           <h1 className="text-2xl font-bold text-slate-900">Dashboard</h1>
-          <p className="mt-1 text-sm text-slate-500">Platform overview and key metrics</p>
+          <p className="mt-1 text-sm text-slate-600">Platform overview and key metrics</p>
         </div>
 
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
@@ -67,7 +67,7 @@ export default function DashboardPage() {
 
         <div className="grid gap-4 lg:grid-cols-3">
           <Card>
-            <CardHeader><CardTitle className="text-sm font-medium text-slate-500">Operations Summary</CardTitle></CardHeader>
+            <CardHeader><CardTitle className="text-sm font-medium text-slate-600">Operations Summary</CardTitle></CardHeader>
             <CardContent className="space-y-3">
               {[
                 { label: "Pending Orders", value: overview?.operations.pending_orders, icon: Clock },
@@ -77,7 +77,7 @@ export default function DashboardPage() {
               ].map((item) => (
                 <div key={item.label} className="flex items-center justify-between">
                   <span className="flex items-center gap-2 text-sm text-slate-600">
-                    <item.icon size={14} className="text-slate-400" />
+                    <item.icon size={14} className="text-slate-500" />
                     {item.label}
                   </span>
                   <span className="text-sm font-semibold">{item.value ?? "—"}</span>
@@ -86,7 +86,7 @@ export default function DashboardPage() {
             </CardContent>
           </Card>
           <Card>
-            <CardHeader><CardTitle className="text-sm font-medium text-slate-500">Financial Summary</CardTitle></CardHeader>
+            <CardHeader><CardTitle className="text-sm font-medium text-slate-600">Financial Summary</CardTitle></CardHeader>
             <CardContent className="space-y-3">
               {[
                 { label: "Order Value", value: overview?.money.order_value },
@@ -102,7 +102,7 @@ export default function DashboardPage() {
             </CardContent>
           </Card>
           <Card>
-            <CardHeader><CardTitle className="text-sm font-medium text-slate-500">System Status</CardTitle></CardHeader>
+            <CardHeader><CardTitle className="text-sm font-medium text-slate-600">System Status</CardTitle></CardHeader>
             <CardContent className="space-y-3">
               <div className="flex items-center justify-between">
                 <span className="text-sm text-slate-600">Database</span>

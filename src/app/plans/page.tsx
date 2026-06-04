@@ -94,7 +94,7 @@ export default function PlansPage() {
           { key: "price", header: "Price", render: (p: Plan) => formatCurrency(p.price) },
           { key: "max_staff", header: "Max Staff" },
           { key: "max_clients", header: "Max Clients" },
-          { key: "is_active", header: "Active", render: (p: Plan) => p.is_active ? <Check size={16} className="text-emerald-600" /> : <X size={16} className="text-slate-400" /> },
+          { key: "is_active", header: "Active", render: (p: Plan) => p.is_active ? <Check size={16} className="text-emerald-600" /> : <X size={16} className="text-slate-500" /> },
           { key: "subscriber_count", header: "Subscribers" },
           { key: "actions", header: "Actions", render: (p: Plan) => (
             <div className="flex gap-1">

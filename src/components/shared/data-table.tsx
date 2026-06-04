@@ -46,7 +46,7 @@ export function DataTable<T extends Record<string, any>>({
         <div className="flex items-center justify-between mb-4">
           {searchable && (
             <div className="relative max-w-sm">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={16} />
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" size={16} />
               <Input
                 placeholder={searchPlaceholder}
                 value={localSearch}
@@ -56,7 +56,7 @@ export function DataTable<T extends Record<string, any>>({
             </div>
           )}
           {total !== undefined && (
-            <p className="text-sm text-slate-500">{total.toLocaleString()} total</p>
+            <p className="text-sm text-slate-600">{total.toLocaleString()} total</p>
           )}
         </div>
       )}
@@ -65,7 +65,7 @@ export function DataTable<T extends Record<string, any>>({
           <TableHeader>
             <TableRow className="bg-slate-50">
               {columns.map((col) => (
-                <TableHead key={col.key} className={cn("text-xs font-semibold uppercase tracking-wider text-slate-500", col.className)}>
+                <TableHead key={col.key} className={cn("text-xs font-semibold uppercase tracking-wider text-slate-600", col.className)}>
                   {col.header}
                 </TableHead>
               ))}
@@ -82,7 +82,7 @@ export function DataTable<T extends Record<string, any>>({
               ))
             ) : data.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={columns.length} className="h-32 text-center text-sm text-slate-500">
+                <TableCell colSpan={columns.length} className="h-32 text-center text-sm text-slate-600">
                   {emptyMessage}
                 </TableCell>
               </TableRow>
@@ -102,7 +102,7 @@ export function DataTable<T extends Record<string, any>>({
       </div>
       {page !== undefined && totalPages !== undefined && totalPages > 1 && (
         <div className="flex items-center justify-between mt-4">
-          <p className="text-sm text-slate-500">Page {page} of {totalPages}</p>
+          <p className="text-sm text-slate-600">Page {page} of {totalPages}</p>
           <div className="flex gap-1">
             <Button variant="outline" size="sm" disabled={page <= 1} onClick={() => onPageChange?.(page - 1)}>
               <ChevronLeft size={16} />

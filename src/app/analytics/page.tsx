@@ -18,7 +18,7 @@ export default function AnalyticsPage() {
   const { data: distribution } = useQuery({ queryKey: ["analytics-distribution"], queryFn: analyticsApi.planDistribution })
 
   if (isLoading) return <AppShell><div className="h-8 w-48 animate-pulse rounded bg-slate-100" /></AppShell>
-  if (!advanced) return <AppShell><p className="text-slate-500">No analytics data available</p></AppShell>
+  if (!advanced) return <AppShell><p className="text-slate-600">No analytics data available</p></AppShell>
 
   return (
     <AppShell>
@@ -34,7 +34,7 @@ export default function AnalyticsPage() {
       </div>
 
       <div className="grid gap-4 lg:grid-cols-3">
-        <Card><CardHeader><CardTitle className="text-sm font-medium text-slate-500">Revenue Breakdown</CardTitle></CardHeader>
+        <Card><CardHeader><CardTitle className="text-sm font-medium text-slate-600">Revenue Breakdown</CardTitle></CardHeader>
           <CardContent className="space-y-3">
             {[
               ["Subscription Revenue", formatCurrency(advanced.revenue.subscription_revenue)],
@@ -50,7 +50,7 @@ export default function AnalyticsPage() {
             ))}
           </CardContent>
         </Card>
-        <Card><CardHeader><CardTitle className="text-sm font-medium text-slate-500">Subscription Metrics</CardTitle></CardHeader>
+        <Card><CardHeader><CardTitle className="text-sm font-medium text-slate-600">Subscription Metrics</CardTitle></CardHeader>
           <CardContent className="space-y-3">
             {[
               ["Active Subscriptions", advanced.subscriptions.active],
@@ -66,7 +66,7 @@ export default function AnalyticsPage() {
             ))}
           </CardContent>
         </Card>
-        <Card><CardHeader><CardTitle className="text-sm font-medium text-slate-500">Financial Health</CardTitle></CardHeader>
+        <Card><CardHeader><CardTitle className="text-sm font-medium text-slate-600">Financial Health</CardTitle></CardHeader>
           <CardContent className="space-y-3">
             {[
               ["Profit Margin", `${advanced.financials.profit_margin}%`],
@@ -94,9 +94,9 @@ export default function AnalyticsPage() {
                 const height = max > 0 ? (m.total / max) * 100 : 0;
                 return (
                   <div key={i} className="flex-1 flex flex-col items-center gap-1">
-                    <span className="text-[10px] text-slate-400">₦{(m.total / 1e3).toFixed(0)}K</span>
+                    <span className="text-[10px] text-slate-500">₦{(m.total / 1e3).toFixed(0)}K</span>
                     <div className="w-full rounded-t bg-indigo-500/80" style={{ height: `${Math.max(height, 4)}%` }} />
-                    <span className="text-[10px] text-slate-500">{m.month?.slice(0, 3) || m.date?.slice(0, 7) || i + 1}</span>
+                    <span className="text-[10px] text-slate-600">{m.month?.slice(0, 3) || m.date?.slice(0, 7) || i + 1}</span>
                   </div>
                 )
               })}
@@ -110,9 +110,9 @@ export default function AnalyticsPage() {
           {((distribution as any).plan_distribution || (distribution as any).plans || []).map((p: any, i: number) => (
             <Card key={i}>
               <CardContent className="p-4">
-                <p className="text-xs text-slate-500">{p.plan_name || p.name || p.plan}</p>
+                <p className="text-xs text-slate-600">{p.plan_name || p.name || p.plan}</p>
                 <p className="text-2xl font-bold">{p.total_subscribers || p.active_subscribers || p.count || 0}</p>
-                <p className="text-xs text-slate-400">{p.percentage?.toFixed(1) || "—"}% of total</p>
+                <p className="text-xs text-slate-500">{p.percentage?.toFixed(1) || "—"}% of total</p>
               </CardContent>
             </Card>
           ))}

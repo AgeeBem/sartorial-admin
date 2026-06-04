@@ -24,9 +24,9 @@ export default function TransactionsPage() {
       <PageHeader title="Transactions" description="All financial transactions across the platform" />
 
       <div className="grid gap-4 sm:grid-cols-3 mb-6">
-        <Card><CardContent className="p-4"><p className="text-xs text-slate-500">Total</p><p className="text-lg font-bold">{data?.count ?? "—"}</p></CardContent></Card>
-        <Card><CardContent className="p-4"><p className="text-xs text-slate-500">Total Value</p><p className="text-lg font-bold">{formatCurrency((data?.results || []).reduce((s: number, t: Transaction) => s + (t.amount || 0), 0))}</p></CardContent></Card>
-        <Card><CardContent className="p-4"><p className="text-xs text-slate-500">Page</p><p className="text-lg font-bold">{page} / {totalPages}</p></CardContent></Card>
+        <Card><CardContent className="p-4"><p className="text-xs text-slate-600">Total</p><p className="text-lg font-bold">{data?.count ?? "—"}</p></CardContent></Card>
+        <Card><CardContent className="p-4"><p className="text-xs text-slate-600">Total Value</p><p className="text-lg font-bold">{formatCurrency((data?.results || []).reduce((s: number, t: Transaction) => s + (t.amount || 0), 0))}</p></CardContent></Card>
+        <Card><CardContent className="p-4"><p className="text-xs text-slate-600">Page</p><p className="text-lg font-bold">{page} / {totalPages}</p></CardContent></Card>
       </div>
 
       <DataTable

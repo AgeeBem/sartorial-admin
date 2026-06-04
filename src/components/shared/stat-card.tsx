@@ -16,7 +16,7 @@ export function StatCard({ title, value, icon: Icon, description, trend, classNa
     <Card className={cn("", className)}>
       <CardContent className="p-6">
         <div className="flex items-center justify-between">
-          <p className="text-sm font-medium text-slate-500">{title}</p>
+          <p className="text-sm font-medium text-slate-600">{title}</p>
           <div className="rounded-lg bg-slate-100 p-2 text-slate-600">
             <Icon size={18} />
           </div>
@@ -29,7 +29,7 @@ export function StatCard({ title, value, icon: Icon, description, trend, classNa
             </span>
           )}
         </div>
-        {description && <p className="mt-1 text-xs text-slate-500">{description}</p>}
+        {description && <p className="mt-1 text-xs text-slate-600">{description}</p>}
       </CardContent>
     </Card>
   )

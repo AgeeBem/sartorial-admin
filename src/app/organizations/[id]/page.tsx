@@ -52,19 +52,19 @@ export default function OrganizationDetailPage() {
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4 mb-6">
         <Card><CardContent className="p-4"><div className="flex items-center gap-3">
           <div className="rounded-lg bg-blue-100 p-2"><Building2 size={18} className="text-blue-600" /></div>
-          <div><p className="text-xs text-slate-500">Status</p><StatusBadge status={org.is_active ? "active" : "inactive"} /></div>
+                  <div><p className="text-xs text-slate-600">Status</p><StatusBadge status={org.is_active ? "active" : "inactive"} /></div>
         </div></CardContent></Card>
         <Card><CardContent className="p-4"><div className="flex items-center gap-3">
           <div className="rounded-lg bg-emerald-100 p-2"><ShoppingBag size={18} className="text-emerald-600" /></div>
-          <div><p className="text-xs text-slate-500">Orders</p><p className="text-lg font-bold">{org.order_count}</p></div>
+                            <div><p className="text-xs text-slate-600">Orders</p><p className="text-lg font-bold">{org.order_count}</p></div>
         </div></CardContent></Card>
         <Card><CardContent className="p-4"><div className="flex items-center gap-3">
           <div className="rounded-lg bg-purple-100 p-2"><Users size={18} className="text-purple-600" /></div>
-          <div><p className="text-xs text-slate-500">Staff / Clients</p><p className="text-lg font-bold">{org.staff_count} / {org.client_count}</p></div>
+                            <div><p className="text-xs text-slate-600">Staff / Clients</p><p className="text-lg font-bold">{org.staff_count} / {org.client_count}</p></div>
         </div></CardContent></Card>
         <Card><CardContent className="p-4"><div className="flex items-center gap-3">
           <div className="rounded-lg bg-amber-100 p-2"><DollarSign size={18} className="text-amber-600" /></div>
-          <div><p className="text-xs text-slate-500">Revenue</p><p className="text-lg font-bold">{formatCurrency(org.revenue)}</p></div>
+                            <div><p className="text-xs text-slate-600">Revenue</p><p className="text-lg font-bold">{formatCurrency(org.revenue)}</p></div>
         </div></CardContent></Card>
       </div>
 
@@ -84,8 +84,8 @@ export default function OrganizationDetailPage() {
               ["Last Login", org.last_login ? formatDateTime(org.last_login) : "Never"],
             ].map(([label, value]) => (
               <div key={label} className="flex justify-between text-sm">
-                <span className="text-slate-500">{label}</span>
-                <span className="font-medium">{value}</span>
+              <span className="text-slate-600">{label}</span>
+              <span className="font-medium text-slate-800">{value}</span>
               </div>
             ))}
           </CardContent>
@@ -97,18 +97,18 @@ export default function OrganizationDetailPage() {
             {activity?.events?.slice(0, 30).map((event: ActivityEvent, i: number) => (
               <div key={i} className="flex items-start gap-3 border-b border-slate-100 pb-3 last:border-0">
                 <div className="mt-0.5 rounded-full bg-slate-100 p-1.5">
-                  <Activity size={12} className="text-slate-500" />
+                  <Activity size={12} className="text-slate-600" />
                 </div>
                 <div className="flex-1 min-w-0">
                   <p className="text-sm font-medium capitalize">{event.type}</p>
-                  <p className="text-xs text-slate-500 truncate">{event.title || event.name || event.description || event.action || event.type}</p>
-                  <p className="text-xs text-slate-400">{formatDateTime(event.date)}</p>
+                  <p className="text-xs text-slate-600 truncate">{event.title || event.name || event.description || event.action || event.type}</p>
+                  <p className="text-xs text-slate-500">{formatDateTime(event.date)}</p>
                 </div>
                 {event.amount && <span className="text-sm font-medium">₦{event.amount.toLocaleString()}</span>}
               </div>
             ))}
             {(!activity?.events || activity.events.length === 0) && (
-              <p className="text-sm text-slate-500 text-center py-4">No activity recorded</p>
+              <p className="text-sm text-slate-600 text-center py-4">No activity recorded</p>
             )}
           </CardContent>
         </Card>

@@ -55,7 +55,7 @@ export function Sidebar() {
         {navItems.map((item, i) => {
           if (item.isGroup) {
             return !collapsed ? (
-              <div key={i} className="px-3 pt-4 pb-1 text-[11px] font-semibold uppercase tracking-wider text-slate-400">
+              <div key={i} className="px-3 pt-4 pb-1 text-[11px] font-semibold uppercase tracking-wider text-slate-500">
                 {item.groupLabel}
               </div>
             ) : null

@@ -87,7 +87,7 @@ export default function AnnouncementsPage() {
                       {a.is_published ? <StatusBadge status="published" /> : <StatusBadge status="draft" />}
                     </div>
                     <p className="mt-1 text-sm text-slate-600">{a.content}</p>
-                    <div className="mt-2 flex items-center gap-3 text-xs text-slate-400">
+                    <div className="mt-2 flex items-center gap-3 text-xs text-slate-500">
                       <span>Audience: {a.target_audience || "all"}</span>
                       <span>{formatDate(a.created_at)}</span>
                     </div>

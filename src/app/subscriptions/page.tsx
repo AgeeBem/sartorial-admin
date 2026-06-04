@@ -72,9 +72,9 @@ export default function SubscriptionsPage() {
       )}
 
       <div className="grid gap-4 lg:grid-cols-3 mb-6">
-        <Card><CardContent className="p-4"><p className="text-xs text-slate-500">Total</p><p className="text-lg font-bold">{data?.count ?? "—"}</p></CardContent></Card>
-        <Card><CardContent className="p-4"><p className="text-xs text-slate-500">Active</p><p className="text-lg font-bold text-emerald-600">{(data?.results || []).filter((s: Subscription) => s.status === "active").length}</p></CardContent></Card>
-        <Card><CardContent className="p-4"><p className="text-xs text-slate-500">Recent History</p><p className="text-lg font-bold">{history?.events?.length || history?.count || 0}</p></CardContent></Card>
+        <Card><CardContent className="p-4"><p className="text-xs text-slate-600">Total</p><p className="text-lg font-bold">{data?.count ?? "—"}</p></CardContent></Card>
+        <Card><CardContent className="p-4"><p className="text-xs text-slate-600">Active</p><p className="text-lg font-bold text-emerald-600">{(data?.results || []).filter((s: Subscription) => s.status === "active").length}</p></CardContent></Card>
+        <Card><CardContent className="p-4"><p className="text-xs text-slate-600">Recent History</p><p className="text-lg font-bold">{history?.events?.length || history?.count || 0}</p></CardContent></Card>
       </div>
 
       <DataTable
@@ -100,7 +100,7 @@ export default function SubscriptionsPage() {
               {history.events.slice(0, 10).map((h: any, i: number) => (
                 <div key={i} className="flex items-center justify-between border-b border-slate-100 pb-2 text-sm">
                   <span><span className="font-medium">{h.action || h.type}</span> — {h.description || h.details || ""}</span>
-                  <span className="text-slate-400 text-xs">{formatDate(h.date || h.created_at)}</span>
+                  <span className="text-slate-500 text-xs">{formatDate(h.date || h.created_at)}</span>
                 </div>
               ))}
             </div>
