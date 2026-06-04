@@ -5,15 +5,70 @@ import { StatCard } from "@/components/shared/stat-card"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { StatusBadge } from "@/components/shared/status-badge"
 import { AppShell } from "@/components/layout/app-shell"
+import { formatCurrency } from "@/lib/utils"
 import {
   Building2, Users, DollarSign, ShoppingBag, AlertTriangle,
   Activity, Clock, Package, CreditCard, TrendingUp, TrendingDown,
 } from "lucide-react"
+import {
+  BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
+  PieChart, Pie, Cell, Legend,
+} from "recharts"
+
+const COLORS = ["#6366f1", "#8b5cf6", "#ec4899", "#f59e0b", "#10b981", "#06b6d4", "#f97316", "#ef4444"]
+
+function CustomTooltip({ active, payload, label }: any) {
+  if (!active || !payload?.length) return null
+  return (
+    <div className="rounded-lg border bg-white px-3 py-2 shadow-lg">
+      <p className="text-xs text-slate-600 mb-1">{label}</p>
+      {payload.map((entry: any, i: number) => (
+        <p key={i} className="text-sm font-semibold" style={{ color: entry.color }}>
+          {entry.name}: {typeof entry.value === "number" && entry.value > 1e6
+            ? `₦${(entry.value / 1e6).toFixed(1)}M`
+            : `₦${(entry.value / 1e3).toFixed(0)}K`}
+        </p>
+      ))}
+    </div>
+  )
+}
+
+function PieTooltip({ active, payload }: any) {
+  if (!active || !payload?.length) return null
+  const entry = payload[0]
+  return (
+    <div className="rounded-lg border bg-white px-3 py-2 shadow-lg">
+      <p className="text-sm font-semibold">{entry.name}</p>
+      <p className="text-xs text-slate-600">{entry.value} subscribers</p>
+    </div>
+  )
+}
 
 export default function DashboardPage() {
   const { data: overview, isLoading: ovLoading } = useQuery({ queryKey: ["overview"], queryFn: overviewApi.get })
   const { data: advanced } = useQuery({ queryKey: ["analytics-advanced"], queryFn: analyticsApi.advanced })
   const { data: health } = useQuery({ queryKey: ["system-health"], queryFn: systemApi.health })
+  const { data: trends } = useQuery({ queryKey: ["analytics-trends"], queryFn: () => analyticsApi.trends() })
+  const { data: distribution } = useQuery({ queryKey: ["analytics-distribution"], queryFn: analyticsApi.planDistribution })
+
+  const revenueData = trends?.monthly_revenue?.slice(-12).map((m: any) => ({
+    month: m.month?.slice(0, 3) || "",
+    revenue: Number(m.total) || 0,
+    transactions: Number(m.transactions) || 0,
+  })) || []
+
+  const planData = ((distribution as any)?.plan_distribution || (distribution as any)?.plans || []).map((p: any) => ({
+    name: p.plan_name || p.name || p.plan || "Unknown",
+    value: p.total_subscribers || p.active_subscribers || p.count || 0,
+  })).filter((p: any) => p.value > 0)
+
+  const subPieData = advanced ? [
+    { name: "Active", value: advanced.subscriptions.active },
+    { name: "Expired", value: advanced.subscriptions.expired },
+    { name: "Trialing", value: advanced.subscriptions.trialing },
+    { name: "Free", value: advanced.subscriptions.free },
+    { name: "Past Due", value: advanced.subscriptions.past_due },
+  ].filter(d => d.value > 0) : []
 
   return (
     <AppShell>
@@ -65,6 +120,56 @@ export default function DashboardPage() {
           </Card>
         )}
 
+        <div className="grid gap-6 lg:grid-cols-2">
+          <Card>
+            <CardHeader><CardTitle className="text-sm font-medium text-slate-600">Monthly Revenue Trend</CardTitle></CardHeader>
+            <CardContent>
+              {revenueData.length > 0 ? (
+                <ResponsiveContainer width="100%" height={280}>
+                  <BarChart data={revenueData} margin={{ top: 8, right: 8, left: -16, bottom: 0 }}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
+                    <XAxis dataKey="month" tick={{ fontSize: 12, fill: "#64748b" }} axisLine={{ stroke: "#e2e8f0" }} tickLine={false} />
+                    <YAxis tick={{ fontSize: 12, fill: "#64748b" }} axisLine={false} tickLine={false}
+                      tickFormatter={(v: number) => v >= 1e6 ? `${(v / 1e6).toFixed(0)}M` : `${(v / 1e3).toFixed(0)}K`} />
+                    <Tooltip content={<CustomTooltip />} cursor={{ fill: "#f1f5f9" }} />
+                    <Bar dataKey="revenue" fill="#6366f1" radius={[4, 4, 0, 0]} maxBarSize={40} />
+                  </BarChart>
+                </ResponsiveContainer>
+              ) : (
+                <div className="flex h-[280px] items-center justify-center text-sm text-slate-500">No revenue data available</div>
+              )}
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader><CardTitle className="text-sm font-medium text-slate-600">Subscription Distribution</CardTitle></CardHeader>
+            <CardContent>
+              {(subPieData.length > 0 || planData.length > 0) ? (
+                <ResponsiveContainer width="100%" height={280}>
+                  <PieChart>
+                    <Pie data={planData.length > 0 ? planData : subPieData}
+                      cx="50%" cy="50%" innerRadius={60} outerRadius={100}
+                      paddingAngle={3} dataKey="value"
+                      stroke="none"
+                    >
+                      {(planData.length > 0 ? planData : subPieData).map((_: any, i: number) => (
+                        <Cell key={i} fill={COLORS[i % COLORS.length]} />
+                      ))}
+                    </Pie>
+                    <Tooltip content={<PieTooltip />} />
+                    <Legend
+                      wrapperStyle={{ fontSize: 12, paddingTop: 8 }}
+                      formatter={(value: string) => <span className="text-slate-700">{value}</span>}
+                    />
+                  </PieChart>
+                </ResponsiveContainer>
+              ) : (
+                <div className="flex h-[280px] items-center justify-center text-sm text-slate-500">No subscription data available</div>
+              )}
+            </CardContent>
+          </Card>
+        </div>
+
         <div className="grid gap-4 lg:grid-cols-3">
           <Card>
             <CardHeader><CardTitle className="text-sm font-medium text-slate-600">Operations Summary</CardTitle></CardHeader>
@@ -86,17 +191,22 @@ export default function DashboardPage() {
             </CardContent>
           </Card>
           <Card>
-            <CardHeader><CardTitle className="text-sm font-medium text-slate-600">Financial Summary</CardTitle></CardHeader>
+            <CardHeader><CardTitle className="text-sm font-medium text-slate-600">Financial Breakdown</CardTitle></CardHeader>
             <CardContent className="space-y-3">
-              {[
-                { label: "Order Value", value: overview?.money.order_value },
-                { label: "Payments Collected", value: overview?.money.payments_collected },
-                { label: "Expenses", value: overview?.money.expenses },
-                { label: "Sub Revenue", value: overview?.money.subscription_revenue },
-              ].map((item) => (
-                <div key={item.label} className="flex items-center justify-between">
-                  <span className="text-sm text-slate-600">{item.label}</span>
-                  <span className="text-sm font-semibold">₦{(item.value ?? 0).toLocaleString()}</span>
+              {(advanced ? [
+                { label: "Gross Revenue", value: formatCurrency(advanced.financials.gross_revenue) },
+                { label: "Net Revenue", value: formatCurrency(advanced.financials.net_revenue) },
+                { label: "Operating Costs", value: formatCurrency(advanced.financials.operating_costs) },
+                { label: "Outstanding", value: formatCurrency(advanced.financials.outstanding_balance) },
+              ] : [
+                { label: "Order Value", value: `₦${(overview?.money.order_value ?? 0).toLocaleString()}` },
+                { label: "Payments Collected", value: `₦${(overview?.money.payments_collected ?? 0).toLocaleString()}` },
+                { label: "Expenses", value: `₦${(overview?.money.expenses ?? 0).toLocaleString()}` },
+                { label: "Sub Revenue", value: `₦${(overview?.money.subscription_revenue ?? 0).toLocaleString()}` },
+              ]).map((item: any) => (
+                <div key={item.label} className="flex justify-between text-sm">
+                  <span className="text-slate-600">{item.label}</span>
+                  <span className="font-semibold">{item.value}</span>
                 </div>
               ))}
             </CardContent>
