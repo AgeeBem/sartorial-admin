@@ -21,6 +21,6 @@ const variantMap: Record<string, "success" | "warning" | "destructive" | "info" 
 }
 
 export function StatusBadge({ status }: { status: string }) {
-  const v = variantMap[status.toLowerCase()] || "secondary"
+  const v = variantMap[status?.toLowerCase() || ""] || "secondary"
   return <Badge variant={v}>{status}</Badge>
 }

@@ -8,6 +8,7 @@ declare module "lucide-react" {
   export const ArrowLeft: Icon
   export const Ban: Icon
   export const BarChart3: Icon
+  export const Bell: Icon
   export const Building2: Icon
   export const Calendar: Icon
   export const Check: Icon
@@ -24,6 +25,7 @@ declare module "lucide-react" {
   export const EyeOff: Icon
   export const FileSpreadsheet: Icon
   export const HardDrive: Icon
+  export const Key: Icon
   export const History: Icon
   export const LayoutDashboard: Icon
   export const LogIn: Icon
@@ -31,6 +33,7 @@ declare module "lucide-react" {
   export const Megaphone: Icon
   export const Menu: Icon
   export const Package: Icon
+  export const Palette: Icon
   export const PieChart: Icon
   export const Plus: Icon
   export const Receipt: Icon
