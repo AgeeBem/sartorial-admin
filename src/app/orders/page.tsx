@@ -22,13 +22,14 @@ export default function OrdersPage() {
       <PageHeader title="Orders" description="All orders across the platform" />
       <DataTable
         columns={[
-          { key: "id", header: "ID" },
-          { key: "organization", header: "Organization", render: (o: any) => o.organization_email || o.organization || "—" },
-          { key: "status", header: "Status", render: (o: any) => <StatusBadge status={o.status} /> },
-          { key: "total", header: "Total", render: (o: any) => formatCurrency(o.total || o.amount) },
-          { key: "payment_status", header: "Payment", render: (o: any) => <StatusBadge status={o.payment_status || "pending"} /> },
-          { key: "client", header: "Client", render: (o: any) => o.client_name || o.client || "—" },
-          { key: "due_date", header: "Due Date", render: (o: any) => formatDate(o.due_date) },
+          { key: "order_title", header: "Title" },
+          { key: "organization_email", header: "Organization", render: (o: any) => o.organization_email || "—" },
+          { key: "client_name", header: "Client", render: (o: any) => o.client_name || "—" },
+          { key: "order_price", header: "Total", render: (o: any) => formatCurrency(o.order_price) },
+          { key: "total_paid", header: "Paid", render: (o: any) => formatCurrency(o.total_paid) },
+          { key: "balance_amount", header: "Balance", render: (o: any) => formatCurrency(o.balance_amount) },
+          { key: "order_status", header: "Status", render: (o: any) => <StatusBadge status={o.order_status} /> },
+          { key: "end_date", header: "End Date", render: (o: any) => formatDate(o.end_date) },
           { key: "created_at", header: "Created", render: (o: any) => formatDate(o.created_at) },
         ]}
         data={data?.results || []} loading={isLoading}

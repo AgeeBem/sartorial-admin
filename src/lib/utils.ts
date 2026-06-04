@@ -5,12 +5,12 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
 
-export function formatCurrency(amount: number | null | undefined, currency = "NGN"): string {
+export function formatCurrency(amount: number | string | null | undefined, currency = "NGN"): string {
   return new Intl.NumberFormat("en-NG", {
     style: "currency",
     currency,
     minimumFractionDigits: 2,
-  }).format(amount || 0)
+  }).format(Number(amount) || 0)
 }
 
 export function formatDate(date: string | Date | null | undefined): string {
@@ -43,6 +43,7 @@ export function getStatusColor(status?: string): string {
     inactive: "bg-gray-100 text-gray-800 border-gray-200",
     suspended: "bg-red-100 text-red-800 border-red-200",
     pending: "bg-amber-100 text-amber-800 border-amber-200",
+    "in progress": "bg-blue-100 text-blue-800 border-blue-200",
     completed: "bg-emerald-100 text-emerald-800 border-emerald-200",
     cancelled: "bg-red-100 text-red-800 border-red-200",
     expired: "bg-red-100 text-red-800 border-red-200",
