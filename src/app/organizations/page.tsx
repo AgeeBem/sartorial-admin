@@ -45,6 +45,7 @@ export default function OrganizationsPage() {
     { key: "staff_count", header: "Staff" },
     { key: "client_count", header: "Clients" },
     { key: "order_count", header: "Orders" },
+    { key: "inventory_count", header: "Inventory" },
     { key: "revenue", header: "Revenue", render: (o: Organization) => formatCurrency(o.revenue) },
     { key: "date_joined", header: "Joined", render: (o: Organization) => formatDate(o.date_joined) },
   ]

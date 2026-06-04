@@ -104,7 +104,7 @@ export default function OrganizationDetailPage() {
                   <p className="text-xs text-slate-600 truncate">{event.title || event.name || event.description || event.action || event.type}</p>
                   <p className="text-xs text-slate-500">{formatDateTime(event.date)}</p>
                 </div>
-                {event.amount && <span className="text-sm font-medium">₦{event.amount.toLocaleString()}</span>}
+                {event.amount && <span className="text-sm font-medium">{formatCurrency(event.amount)}</span>}
               </div>
             ))}
             {(!activity?.events || activity.events.length === 0) && (
