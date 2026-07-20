@@ -7,8 +7,8 @@ import { StatusBadge } from "@/components/shared/status-badge"
 import { AppShell } from "@/components/layout/app-shell"
 import { formatCurrency } from "@/lib/utils"
 import {
-  Building2, Users, DollarSign, ShoppingBag, AlertTriangle,
-  Activity, Clock, Package, CreditCard, TrendingUp, TrendingDown,
+  Building2, Users, DollarSign, UserCircle, AlertTriangle,
+  CreditCard, TrendingUp, TrendingDown, Sparkles,
 } from "lucide-react"
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
@@ -24,9 +24,7 @@ function CustomTooltip({ active, payload, label }: any) {
       <p className="text-xs text-slate-600 mb-1">{label}</p>
       {payload.map((entry: any, i: number) => (
         <p key={i} className="text-sm font-semibold" style={{ color: entry.color }}>
-          {entry.name}: {typeof entry.value === "number" && entry.value > 1e6
-            ? `₦${(entry.value / 1e6).toFixed(1)}M`
-            : `₦${(entry.value / 1e3).toFixed(0)}K`}
+          ₦{Number(entry.value).toLocaleString()}
         </p>
       ))}
     </div>
@@ -45,20 +43,20 @@ function PieTooltip({ active, payload }: any) {
 }
 
 export default function DashboardPage() {
-  const { data: overview, isLoading: ovLoading } = useQuery({ queryKey: ["overview"], queryFn: overviewApi.get })
+  const { data: overview } = useQuery({ queryKey: ["overview"], queryFn: overviewApi.get })
   const { data: advanced } = useQuery({ queryKey: ["analytics-advanced"], queryFn: analyticsApi.advanced })
   const { data: health } = useQuery({ queryKey: ["system-health"], queryFn: systemApi.health })
   const { data: trends } = useQuery({ queryKey: ["analytics-trends"], queryFn: () => analyticsApi.trends() })
   const { data: distribution } = useQuery({ queryKey: ["analytics-distribution"], queryFn: analyticsApi.planDistribution })
 
-  const revenueData = trends?.order_payments?.slice(-12).map((m: any) => ({
-    month: m.month?.slice(0, 3) || "",
-    revenue: Number(m.amount) || 0,
+  const revenueData = trends?.subscription_revenue?.slice(-12).map((m) => ({
+    month: m.month?.slice(0, 7) || "",
+    revenue: Number(m.revenue) || 0,
   })) || []
 
-  const planData = ((distribution as any)?.plan_distribution || (distribution as any)?.plans || []).map((p: any) => ({
-    name: p.plan_name || p.name || p.plan || "Unknown",
-    value: p.total_subscribers || p.active_subscribers || p.count || 0,
+  const planData = ((distribution as any)?.plan_distribution || []).map((p: any) => ({
+    name: p.plan_name || p.plan || "Unknown",
+    value: p.total_subscribers || p.active_subscribers || 0,
   })).filter((p: any) => p.value > 0)
 
   const subPieData = advanced ? [
@@ -73,37 +71,25 @@ export default function DashboardPage() {
       <div className="space-y-6">
         <div>
           <h1 className="text-2xl font-bold text-slate-900">Dashboard</h1>
-          <p className="mt-1 text-sm text-slate-600">Platform overview and key metrics</p>
+          <p className="mt-1 text-sm text-slate-600">Platform accounts, subscriptions and billing</p>
         </div>
 
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           <StatCard title="Organizations" value={overview?.users.organizations ?? "—"} icon={Building2}
-            description={`${overview?.users.organizations ?? 0} total`} />
-          <StatCard title="Total Users" value={overview?.users.total ?? "—"} icon={Users} />
-          <StatCard title="Orders" value={overview?.business.orders ?? "—"} icon={ShoppingBag}
-            description={`${overview?.business.orders_this_month ?? 0} this month`} />
-          {overview?.money && (
-            <StatCard title="Revenue" value={`₦${((overview.money.payments_collected || 0) / 1e6).toFixed(1)}M`} icon={DollarSign} />
-          )}
-          <StatCard title="Active Subs" value={overview?.business.active_subscriptions ?? "—"} icon={CreditCard} />
-          <StatCard title="Clients" value={overview?.business.clients ?? "—"} icon={Users} />
-          <StatCard title="Inventory" value={advanced?.operations.total_inventory ?? "—"} icon={Package} />
-          <StatCard title="Low Stock" value={overview?.operations.low_stock_items ?? "—"} icon={AlertTriangle}
-            className={overview?.operations.low_stock_items ? "border-red-200 bg-red-50" : ""} />
+            description={`${overview?.billing.new_organizations_this_month ?? 0} new this month`} />
+          <StatCard title="Total Users" value={overview?.users.total ?? "—"} icon={Users}
+            description={`${overview?.users.staff ?? 0} staff`} />
+          <StatCard title="Clients" value={overview?.accounts.clients ?? "—"} icon={UserCircle} />
+          <StatCard title="Active Subs" value={overview?.accounts.active_subscriptions ?? "—"} icon={CreditCard}
+            description={`${overview?.accounts.trialing_subscriptions ?? 0} trialing`} />
+          <StatCard title="MRR" value={`₦${((advanced?.revenue.mrr || 0) / 1e3).toFixed(0)}K`} icon={TrendingUp}
+            trend={{ value: advanced?.revenue.growth_rate || 0, positive: (advanced?.revenue.growth_rate || 0) >= 0 }} />
+          <StatCard title="ARR" value={`₦${((advanced?.revenue.arr || 0) / 1e6).toFixed(1)}M`} icon={TrendingUp} />
+          <StatCard title="Churn Rate" value={`${advanced?.subscriptions.churn_rate || 0}%`} icon={TrendingDown}
+            trend={{ value: advanced?.subscriptions.churn_rate || 0, positive: false }} />
+          <StatCard title="Subscription Revenue" value={formatCurrency(overview?.billing.subscription_revenue || 0)} icon={DollarSign}
+            description={`${formatCurrency(overview?.billing.revenue_this_month || 0)} this month`} />
         </div>
-
-        {advanced && (
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-            <StatCard title="MRR" value={`₦${((advanced.revenue.mrr || 0) / 1e3).toFixed(0)}K`} icon={TrendingUp}
-              trend={{ value: advanced.revenue.growth_rate || 0, positive: (advanced.revenue.growth_rate || 0) >= 0 }} />
-            <StatCard title="ARR" value={`₦${((advanced.revenue.arr || 0) / 1e6).toFixed(1)}M`} icon={TrendingUp} />
-            <StatCard title="Churn Rate" value={`${advanced.subscriptions.churn_rate || 0}%`} icon={TrendingDown}
-              trend={{ value: advanced.subscriptions.churn_rate || 0, positive: false }} />
-            {advanced.financials && (
-              <StatCard title="Profit Margin" value={`${advanced.financials.profit_margin || 0}%`} icon={Activity} />
-            )}
-          </div>
-        )}
 
         {health && health.alerts.length > 0 && (
           <Card className="border-amber-200 bg-amber-50">
@@ -124,7 +110,7 @@ export default function DashboardPage() {
 
         <div className="grid gap-6 lg:grid-cols-2">
           <Card>
-            <CardHeader><CardTitle className="text-sm font-medium text-slate-600">Monthly Revenue Trend</CardTitle></CardHeader>
+            <CardHeader><CardTitle className="text-sm font-medium text-slate-600">Monthly Subscription Revenue</CardTitle></CardHeader>
             <CardContent>
               {revenueData.length > 0 ? (
                 <ResponsiveContainer width="100%" height={280}>
@@ -138,7 +124,7 @@ export default function DashboardPage() {
                   </BarChart>
                 </ResponsiveContainer>
               ) : (
-                <div className="flex h-[280px] items-center justify-center text-sm text-slate-500">No revenue data available</div>
+                <div className="flex h-[280px] items-center justify-center text-sm text-slate-500">No revenue data yet</div>
               )}
             </CardContent>
           </Card>
@@ -151,18 +137,14 @@ export default function DashboardPage() {
                   <PieChart>
                     <Pie data={planData.length > 0 ? planData : subPieData}
                       cx="50%" cy="50%" innerRadius={60} outerRadius={100}
-                      paddingAngle={3} dataKey="value"
-                      stroke="none"
-                    >
+                      paddingAngle={3} dataKey="value" stroke="none">
                       {(planData.length > 0 ? planData : subPieData).map((_: any, i: number) => (
                         <Cell key={i} fill={COLORS[i % COLORS.length]} />
                       ))}
                     </Pie>
                     <Tooltip content={<PieTooltip />} />
-                    <Legend
-                      wrapperStyle={{ fontSize: 12, paddingTop: 8 }}
-                      formatter={(value: string) => <span className="text-slate-700">{value}</span>}
-                    />
+                    <Legend wrapperStyle={{ fontSize: 12, paddingTop: 8 }}
+                      formatter={(value: string) => <span className="text-slate-700">{value}</span>} />
                   </PieChart>
                 </ResponsiveContainer>
               ) : (
@@ -174,64 +156,37 @@ export default function DashboardPage() {
 
         <div className="grid gap-4 lg:grid-cols-3">
           <Card>
-            <CardHeader><CardTitle className="text-sm font-medium text-slate-600">Operations Summary</CardTitle></CardHeader>
+            <CardHeader><CardTitle className="flex items-center gap-2 text-sm font-medium text-slate-600"><Sparkles size={14} /> Subscriptions</CardTitle></CardHeader>
             <CardContent className="space-y-3">
               {[
-                { label: "Pending Orders", value: overview?.operations.pending_orders, icon: Clock },
-                { label: "Overdue Orders", value: overview?.operations.overdue_orders, icon: AlertTriangle },
-                { label: "Unpaid Bills", value: health?.summary.unpaid_bills, icon: DollarSign },
-                { label: "Expired Subs", value: overview?.business.expired_subscriptions, icon: CreditCard },
+                { label: "Active", value: overview?.accounts.active_subscriptions },
+                { label: "Trialing", value: overview?.accounts.trialing_subscriptions },
+                { label: "Past Due", value: overview?.accounts.past_due_subscriptions },
+                { label: "Expired", value: overview?.accounts.expired_subscriptions },
               ].map((item) => (
-                <div key={item.label} className="flex items-center justify-between">
-                  <span className="flex items-center gap-2 text-sm text-slate-600">
-                    <item.icon size={14} className="text-slate-500" />
-                    {item.label}
-                  </span>
-                  <span className="text-sm font-semibold">{item.value ?? "—"}</span>
+                <div key={item.label} className="flex items-center justify-between text-sm">
+                  <span className="text-slate-600">{item.label}</span>
+                  <span className="font-semibold">{item.value ?? "—"}</span>
                 </div>
               ))}
             </CardContent>
           </Card>
-          {(advanced?.financials || overview?.money) ? (
-            <Card>
-              <CardHeader><CardTitle className="text-sm font-medium text-slate-600">Financial Breakdown</CardTitle></CardHeader>
-              <CardContent className="space-y-3">
-                {(advanced?.financials ? [
-                  { label: "Total Order Value", value: formatCurrency(advanced.financials.total_order_value) },
-                  { label: "Payments Collected", value: formatCurrency(advanced.financials.total_payments_collected) },
-                  { label: "Total Expenses", value: formatCurrency(advanced.financials.total_expenses) },
-                  { label: "Outstanding", value: formatCurrency(advanced.financials.outstanding_balance) },
-                ] : [
-                  { label: "Order Value", value: `₦${(overview?.money?.order_value ?? 0).toLocaleString()}` },
-                  { label: "Payments Collected", value: `₦${(overview?.money?.payments_collected ?? 0).toLocaleString()}` },
-                  { label: "Expenses", value: `₦${(overview?.money?.expenses ?? 0).toLocaleString()}` },
-                  { label: "Transactions", value: `₦${(overview?.money?.transactions_successful ?? 0).toLocaleString()}` },
-                ]).map((item: any) => (
-                  <div key={item.label} className="flex justify-between text-sm">
-                    <span className="text-slate-600">{item.label}</span>
-                    <span className="font-semibold">{item.value}</span>
-                  </div>
-                ))}
-              </CardContent>
-            </Card>
-          ) : (
-            <Card>
-              <CardHeader><CardTitle className="text-sm font-medium text-slate-600">Operations Overview</CardTitle></CardHeader>
-              <CardContent className="space-y-3">
-                {[
-                  { label: "Total Clients", value: overview?.business.clients },
-                  { label: "Total Orders", value: overview?.business.orders },
-                  { label: "Active Subscriptions", value: overview?.business.active_subscriptions },
-                  { label: "Inventory Items", value: advanced?.operations.total_inventory },
-                ].map((item) => (
-                  <div key={item.label} className="flex justify-between text-sm">
-                    <span className="text-slate-600">{item.label}</span>
-                    <span className="font-semibold">{item.value ?? "—"}</span>
-                  </div>
-                ))}
-              </CardContent>
-            </Card>
-          )}
+          <Card>
+            <CardHeader><CardTitle className="text-sm font-medium text-slate-600">Billing</CardTitle></CardHeader>
+            <CardContent className="space-y-3">
+              {[
+                { label: "Total Revenue", value: formatCurrency(overview?.billing.subscription_revenue || 0) },
+                { label: "This Month", value: formatCurrency(overview?.billing.revenue_this_month || 0) },
+                { label: "MRR", value: formatCurrency(advanced?.revenue.mrr || 0) },
+                { label: "Conversion", value: `${advanced?.subscriptions.conversion_rate || 0}%` },
+              ].map((item) => (
+                <div key={item.label} className="flex justify-between text-sm">
+                  <span className="text-slate-600">{item.label}</span>
+                  <span className="font-semibold">{item.value}</span>
+                </div>
+              ))}
+            </CardContent>
+          </Card>
           <Card>
             <CardHeader><CardTitle className="text-sm font-medium text-slate-600">System Status</CardTitle></CardHeader>
             <CardContent className="space-y-3">
@@ -240,16 +195,16 @@ export default function DashboardPage() {
                 <StatusBadge status={health?.database?.status || "unknown"} />
               </div>
               <div className="flex items-center justify-between">
+                <span className="text-sm text-slate-600">Workers</span>
+                <StatusBadge status={health?.celery?.status || "unknown"} />
+              </div>
+              <div className="flex items-center justify-between">
                 <span className="text-sm text-slate-600">Organizations</span>
                 <span className="text-sm font-semibold">{overview?.users.organizations ?? "—"}</span>
               </div>
               <div className="flex items-center justify-between">
-                <span className="text-sm text-slate-600">Total Orders</span>
-                <span className="text-sm font-semibold">{overview?.business.orders ?? "—"}</span>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="text-sm text-slate-600">Inventory Items</span>
-                <span className="text-sm font-semibold">{advanced?.operations.total_inventory ?? "—"}</span>
+                <span className="text-sm text-slate-600">Clients</span>
+                <span className="text-sm font-semibold">{overview?.accounts.clients ?? "—"}</span>
               </div>
             </CardContent>
           </Card>

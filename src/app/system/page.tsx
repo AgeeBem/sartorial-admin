@@ -5,12 +5,10 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { StatusBadge } from "@/components/shared/status-badge"
 import { PageHeader } from "@/components/shared/page-header"
 import { AppShell } from "@/components/layout/app-shell"
-import { formatDate } from "@/lib/utils"
-import { Server, Database, HardDrive, Activity, AlertTriangle, RefreshCw } from "lucide-react"
+import { Server, Database, HardDrive, AlertTriangle, RefreshCw } from "lucide-react"
 
 export default function SystemPage() {
   const { data: health, isLoading, refetch } = useQuery({ queryKey: ["system-health"], queryFn: systemApi.health })
-  const { data: alerts } = useQuery({ queryKey: ["system-alerts"], queryFn: () => systemApi.alerts() })
 
   if (isLoading) return <AppShell><div className="h-8 w-48 animate-pulse rounded bg-slate-100" /></AppShell>
   if (!health) return <AppShell><p className="text-slate-600">No system data available</p></AppShell>
@@ -81,24 +79,6 @@ export default function SystemPage() {
         </Card>
       )}
 
-      {alerts?.results && alerts.results.length > 0 && (
-        <Card>
-          <CardHeader><CardTitle className="flex items-center gap-2 text-sm font-medium"><Activity size={16} /> Alert History</CardTitle></CardHeader>
-          <CardContent>
-            <div className="space-y-2">
-              {alerts.results.map((a: any, i: number) => (
-                <div key={i} className="flex items-center justify-between border-b border-slate-100 pb-2 text-sm">
-                  <div className="flex items-center gap-2">
-                    <StatusBadge status={a.severity || a.level || "info"} />
-                    <span>{a.message || a.title}</span>
-                  </div>
-                  <span className="text-xs text-slate-500">{formatDate(a.created_at || a.timestamp)}</span>
-                </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
-      )}
     </AppShell>
   )
 }

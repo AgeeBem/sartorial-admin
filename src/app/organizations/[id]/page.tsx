@@ -10,7 +10,7 @@ import { Button } from "@/components/ui/button"
 import { formatDate, formatCurrency, formatDateTime } from "@/lib/utils"
 import { useParams, useRouter } from "next/navigation"
 import { useState } from "react"
-import { ArrowLeft, Building2, Users, ShoppingBag, DollarSign, Activity, Clock, Sparkles, CheckCircle } from "lucide-react"
+import { ArrowLeft, Building2, Users, Package, CreditCard, Activity, Clock, Sparkles, CheckCircle } from "lucide-react"
 import type { ActivityEvent, Plan, Subscription } from "@/lib/types"
 
 // Colour-coded urgency for the remaining trial/period window.
@@ -92,31 +92,24 @@ export default function OrganizationDetailPage() {
         }
       />
 
-      {/* Statistical counts — what Sartorial needs, not merchant business records */}
+      {/* Usage counts and account status — what Sartorial needs, not merchant records */}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4 mb-6">
         <Card><CardContent className="p-4"><div className="flex items-center gap-3">
           <div className="rounded-lg bg-blue-100 p-2"><Building2 size={18} className="text-blue-600" /></div>
           <div><p className="text-xs text-slate-600">Status</p><StatusBadge status={org.is_active ? "active" : "inactive"} /></div>
         </div></CardContent></Card>
         <Card><CardContent className="p-4"><div className="flex items-center gap-3">
-          <div className="rounded-lg bg-emerald-100 p-2"><ShoppingBag size={18} className="text-emerald-600" /></div>
-          <div><p className="text-xs text-slate-600">Orders</p><p className="text-lg font-bold">{org.order_count}</p></div>
-        </div></CardContent></Card>
-        <Card><CardContent className="p-4"><div className="flex items-center gap-3">
           <div className="rounded-lg bg-purple-100 p-2"><Users size={18} className="text-purple-600" /></div>
           <div><p className="text-xs text-slate-600">Staff / Clients</p><p className="text-lg font-bold">{org.staff_count} / {org.client_count}</p></div>
         </div></CardContent></Card>
-        {org.revenue !== undefined ? (
-          <Card><CardContent className="p-4"><div className="flex items-center gap-3">
-            <div className="rounded-lg bg-amber-100 p-2"><DollarSign size={18} className="text-amber-600" /></div>
-            <div><p className="text-xs text-slate-600">Revenue</p><p className="text-lg font-bold">{formatCurrency(org.revenue)}</p></div>
-          </div></CardContent></Card>
-        ) : (
-          <Card><CardContent className="p-4"><div className="flex items-center gap-3">
-            <div className="rounded-lg bg-slate-100 p-2"><Activity size={18} className="text-slate-600" /></div>
-            <div><p className="text-xs text-slate-600">Inventory Items</p><p className="text-lg font-bold">{org.inventory_count}</p></div>
-          </div></CardContent></Card>
-        )}
+        <Card><CardContent className="p-4"><div className="flex items-center gap-3">
+          <div className="rounded-lg bg-emerald-100 p-2"><Package size={18} className="text-emerald-600" /></div>
+          <div><p className="text-xs text-slate-600">Inventory Items</p><p className="text-lg font-bold">{org.inventory_count}</p></div>
+        </div></CardContent></Card>
+        <Card><CardContent className="p-4"><div className="flex items-center gap-3">
+          <div className="rounded-lg bg-amber-100 p-2"><CreditCard size={18} className="text-amber-600" /></div>
+          <div><p className="text-xs text-slate-600">Plan</p><p className="text-sm font-bold">{org.subscription_plan || "—"}</p></div>
+        </div></CardContent></Card>
       </div>
 
       <div className="grid gap-6 lg:grid-cols-3 mb-6">
@@ -206,8 +199,6 @@ export default function OrganizationDetailPage() {
               ["Staff", String(org.staff_count)],
               ["Clients", String(org.client_count)],
               ["Inventory", String(org.inventory_count)],
-              ...(org.expense_total !== undefined ? [["Expenses", formatCurrency(org.expense_total)]] : []),
-              ...(org.outstanding_balance !== undefined ? [["Outstanding", formatCurrency(org.outstanding_balance)]] : []),
               ["Last Login", org.last_login ? formatDateTime(org.last_login) : "Never"],
             ].map(([label, value]) => (
               <div key={label} className="flex justify-between text-sm">

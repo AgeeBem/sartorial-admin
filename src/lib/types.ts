@@ -1,18 +1,20 @@
 export interface AdminOverview {
   users: { total: number; super_admins: number; organizations: number; staff: number; inactive: number }
-  business: { clients: number; orders: number; orders_this_month: number; active_subscriptions: number; expired_subscriptions: number }
-  // Owner-only: absent for support-tier staff.
-  money?: { order_value: number; payments_collected: number; expenses: number; transactions_successful: number }
-  operations: { low_stock_items: number; overdue_orders: number; pending_orders: number }
+  // Usage counts + subscription health (Sartorial's concern; no merchant orders).
+  accounts: {
+    clients: number; inventory_items: number
+    active_subscriptions: number; trialing_subscriptions: number
+    expired_subscriptions: number; past_due_subscriptions: number
+  }
+  // Sartorial's own revenue (what merchants pay Sartorial).
+  billing: { subscription_revenue: number; revenue_this_month: number; new_organizations_this_month: number }
 }
 
 export interface AdvancedAnalytics {
   revenue: { total_revenue: number; this_month: number; prev_month: number; mrr: number; arr: number; growth_rate: number }
   organizations: { total: number; active: number; inactive: number; this_month_new: number; growth_rate: number }
   subscriptions: { total: number; active: number; churned: number; churn_rate: number; conversion_rate: number; free: number; past_due: number }
-  // Owner-only: absent for support-tier staff.
-  financials?: { total_order_value: number; total_payments_collected: number; total_expenses: number; profit: number; profit_margin: number; outstanding_balance: number }
-  operations: { total_clients: number; total_orders: number; pending_orders: number; overdue_orders: number; completed_orders: number; in_progress_orders: number; total_inventory: number; low_stock_items: number }
+  usage: { total_clients: number; total_inventory: number }
 }
 
 export interface EventLogEntry {
@@ -25,10 +27,9 @@ export interface EventLogEntry {
 export interface Organization {
   id: string; email: string; first_name: string; last_name: string; full_name: string; phone_number: string
   is_active: boolean; date_joined: string; last_login: string | null
-  staff_count: number; client_count: number; order_count: number; inventory_count: number
+  // Usage counts only — no order counts or financials (merchant business data).
+  staff_count: number; client_count: number; inventory_count: number
   subscription_status: string | null; subscription_plan: string | null
-  // Owner-only business financials: absent for support-tier staff.
-  revenue?: number; expense_total?: number; outstanding_balance?: number
 }
 
 export interface AuditLogEntry {
@@ -85,9 +86,7 @@ export interface GrowthTrend {
 
 export interface RevenueTrends {
   period: { start: string; end: string }
-  subscription_revenue: Array<{ month: string; amount: number }>
-  order_payments: Array<{ month: string; amount: number }>
-  expenses: Array<{ month: string; amount: number }>
+  subscription_revenue: Array<{ month: string; revenue: number; transactions: number }>
 }
 
 export interface PlanDistribution {
