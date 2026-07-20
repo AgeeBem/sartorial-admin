@@ -62,10 +62,12 @@ export default function OrganizationDetailPage() {
           <div className="rounded-lg bg-purple-100 p-2"><Users size={18} className="text-purple-600" /></div>
                             <div><p className="text-xs text-slate-600">Staff / Clients</p><p className="text-lg font-bold">{org.staff_count} / {org.client_count}</p></div>
         </div></CardContent></Card>
-        <Card><CardContent className="p-4"><div className="flex items-center gap-3">
-          <div className="rounded-lg bg-amber-100 p-2"><DollarSign size={18} className="text-amber-600" /></div>
-                            <div><p className="text-xs text-slate-600">Revenue</p><p className="text-lg font-bold">{formatCurrency(org.revenue)}</p></div>
-        </div></CardContent></Card>
+        {org.revenue !== undefined && (
+          <Card><CardContent className="p-4"><div className="flex items-center gap-3">
+            <div className="rounded-lg bg-amber-100 p-2"><DollarSign size={18} className="text-amber-600" /></div>
+                              <div><p className="text-xs text-slate-600">Revenue</p><p className="text-lg font-bold">{formatCurrency(org.revenue)}</p></div>
+          </div></CardContent></Card>
+        )}
       </div>
 
       <div className="grid gap-6 lg:grid-cols-2">
@@ -79,8 +81,9 @@ export default function OrganizationDetailPage() {
               ["Staff Count", String(org.staff_count)],
               ["Client Count", String(org.client_count)],
               ["Inventory", String(org.inventory_count)],
-              ["Expenses", formatCurrency(org.expense_total || 0)],
-              ["Outstanding", formatCurrency(org.outstanding_balance || 0)],
+              // Owner-only business financials — omitted for support.
+              ...(org.expense_total !== undefined ? [["Expenses", formatCurrency(org.expense_total)]] : []),
+              ...(org.outstanding_balance !== undefined ? [["Outstanding", formatCurrency(org.outstanding_balance)]] : []),
               ["Last Login", org.last_login ? formatDateTime(org.last_login) : "Never"],
             ].map(([label, value]) => (
               <div key={label} className="flex justify-between text-sm">

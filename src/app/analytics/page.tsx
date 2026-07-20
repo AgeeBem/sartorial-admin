@@ -82,7 +82,7 @@ export default function AnalyticsPage() {
         </Card>
         <Card><CardHeader><CardTitle className="text-sm font-medium text-slate-600">Financial Health</CardTitle></CardHeader>
           <CardContent className="space-y-3">
-            {[
+            {advanced.financials ? [
               ["Total Order Value", formatCurrency(advanced.financials.total_order_value)],
               ["Payments Collected", formatCurrency(advanced.financials.total_payments_collected)],
               ["Total Expenses", formatCurrency(advanced.financials.total_expenses)],
@@ -94,7 +94,11 @@ export default function AnalyticsPage() {
                 <span className="text-slate-600">{label}</span>
                 <span className="font-semibold">{val}</span>
               </div>
-            ))}
+            )) : (
+              <p className="text-sm text-slate-500">
+                Merchant financial figures are available to platform owners only.
+              </p>
+            )}
           </CardContent>
         </Card>
       </div>

@@ -5,10 +5,13 @@ import { cn } from "@/lib/utils"
 import {
   LayoutDashboard, Building2, Users, CreditCard, Receipt, ShoppingBag,
   UserCircle, Package, DollarSign, BarChart3, ScrollText, Megaphone,
-  Shield, Activity, Download, ChevronLeft, Menu, Settings2,
+  Shield, Activity, Download, ChevronLeft, Menu, Settings2, Bug,
 } from "lucide-react"
 import { useState } from "react"
+import { useAuth } from "@/contexts/auth-context"
 
+// `ownerOnly` items surface merchant business data and are hidden from
+// support-tier staff (the backend also enforces this with 403s).
 const navItems = [
   { label: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
   { label: "Organizations", href: "/organizations", icon: Building2 },
@@ -16,13 +19,14 @@ const navItems = [
   { label: "Plans", href: "/plans", icon: CreditCard },
   { label: "Subscriptions", href: "/subscriptions", icon: Receipt },
   { label: "Transactions", href: "/transactions", icon: DollarSign },
-  { label: "Orders", href: "/orders", icon: ShoppingBag },
-  { label: "Clients", href: "/clients", icon: UserCircle },
-  { label: "Inventory", href: "/inventory", icon: Package },
-  { label: "Expenses", href: "/expenses", icon: DollarSign },
+  { label: "Orders", href: "/orders", icon: ShoppingBag, ownerOnly: true },
+  { label: "Clients", href: "/clients", icon: UserCircle, ownerOnly: true },
+  { label: "Inventory", href: "/inventory", icon: Package, ownerOnly: true },
+  { label: "Expenses", href: "/expenses", icon: DollarSign, ownerOnly: true },
   { label: "", href: "", icon: undefined, isGroup: true, groupLabel: "TOOLS" },
   { label: "Analytics", href: "/analytics", icon: BarChart3 },
   { label: "Audit Log", href: "/audit-log", icon: ScrollText },
+  { label: "Event Log", href: "/event-log", icon: Bug },
   { label: "Announcements", href: "/announcements", icon: Megaphone },
   { label: "System Health", href: "/system", icon: Activity },
   { label: "Security", href: "/security", icon: Shield },
@@ -32,6 +36,8 @@ const navItems = [
 export function Sidebar() {
   const pathname = usePathname()
   const [collapsed, setCollapsed] = useState(false)
+  const { isOwner } = useAuth()
+  const visibleItems = navItems.filter((item) => !item.ownerOnly || isOwner)
 
   return (
     <aside className={cn(
@@ -52,7 +58,7 @@ export function Sidebar() {
         </button>
       </div>
       <nav className="flex-1 overflow-y-auto p-2 space-y-0.5">
-        {navItems.map((item, i) => {
+        {visibleItems.map((item, i) => {
           if (item.isGroup) {
             return !collapsed ? (
               <div key={i} className="px-3 pt-4 pb-1 text-[11px] font-semibold uppercase tracking-wider text-slate-500">

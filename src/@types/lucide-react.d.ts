@@ -9,6 +9,7 @@ declare module "lucide-react" {
   export const Ban: Icon
   export const BarChart3: Icon
   export const Bell: Icon
+  export const Bug: Icon
   export const Building2: Icon
   export const Calendar: Icon
   export const Check: Icon
@@ -28,6 +29,7 @@ declare module "lucide-react" {
   export const Key: Icon
   export const History: Icon
   export const LayoutDashboard: Icon
+  export const Lock: Icon
   export const LogIn: Icon
   export const LogOut: Icon
   export const Megaphone: Icon

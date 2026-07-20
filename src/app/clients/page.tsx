@@ -5,10 +5,15 @@ import { DataTable } from "@/components/shared/data-table"
 import { StatusBadge } from "@/components/shared/status-badge"
 import { PageHeader } from "@/components/shared/page-header"
 import { AppShell } from "@/components/layout/app-shell"
+import { RequireOwner } from "@/components/shared/require-owner"
 import { formatDate } from "@/lib/utils"
 import { useState } from "react"
 
 export default function ClientsPage() {
+  return <RequireOwner><ClientsContent /></RequireOwner>
+}
+
+function ClientsContent() {
   const [page, setPage] = useState(1)
   const [search, setSearch] = useState("")
   const { data, isLoading } = useQuery({

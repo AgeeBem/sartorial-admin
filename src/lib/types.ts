@@ -1,7 +1,8 @@
 export interface AdminOverview {
   users: { total: number; super_admins: number; organizations: number; staff: number; inactive: number }
   business: { clients: number; orders: number; orders_this_month: number; active_subscriptions: number; expired_subscriptions: number }
-  money: { order_value: number; payments_collected: number; expenses: number; transactions_successful: number }
+  // Owner-only: absent for support-tier staff.
+  money?: { order_value: number; payments_collected: number; expenses: number; transactions_successful: number }
   operations: { low_stock_items: number; overdue_orders: number; pending_orders: number }
 }
 
@@ -9,16 +10,25 @@ export interface AdvancedAnalytics {
   revenue: { total_revenue: number; this_month: number; prev_month: number; mrr: number; arr: number; growth_rate: number }
   organizations: { total: number; active: number; inactive: number; this_month_new: number; growth_rate: number }
   subscriptions: { total: number; active: number; churned: number; churn_rate: number; conversion_rate: number; free: number; past_due: number }
-  financials: { total_order_value: number; total_payments_collected: number; total_expenses: number; profit: number; profit_margin: number; outstanding_balance: number }
+  // Owner-only: absent for support-tier staff.
+  financials?: { total_order_value: number; total_payments_collected: number; total_expenses: number; profit: number; profit_margin: number; outstanding_balance: number }
   operations: { total_clients: number; total_orders: number; pending_orders: number; overdue_orders: number; completed_orders: number; in_progress_orders: number; total_inventory: number; low_stock_items: number }
+}
+
+export interface EventLogEntry {
+  id: string; level: "info" | "warning" | "error"; event_type: string
+  source: string; message: string; path: string; method: string
+  status_code: number | null; organization: string | null
+  organization_email?: string; created_at: string
 }
 
 export interface Organization {
   id: string; email: string; first_name: string; last_name: string; full_name: string; phone_number: string
   is_active: boolean; date_joined: string; last_login: string | null
   staff_count: number; client_count: number; order_count: number; inventory_count: number
-  subscription_status: string | null; subscription_plan: string | null; revenue: number
-  expense_total?: number; outstanding_balance?: number
+  subscription_status: string | null; subscription_plan: string | null
+  // Owner-only business financials: absent for support-tier staff.
+  revenue?: number; expense_total?: number; outstanding_balance?: number
 }
 
 export interface AuditLogEntry {

@@ -82,7 +82,9 @@ export default function DashboardPage() {
           <StatCard title="Total Users" value={overview?.users.total ?? "—"} icon={Users} />
           <StatCard title="Orders" value={overview?.business.orders ?? "—"} icon={ShoppingBag}
             description={`${overview?.business.orders_this_month ?? 0} this month`} />
-          <StatCard title="Revenue" value={overview ? `₦${((overview.money.payments_collected || 0) / 1e6).toFixed(1)}M` : "—"} icon={DollarSign} />
+          {overview?.money && (
+            <StatCard title="Revenue" value={`₦${((overview.money.payments_collected || 0) / 1e6).toFixed(1)}M`} icon={DollarSign} />
+          )}
           <StatCard title="Active Subs" value={overview?.business.active_subscriptions ?? "—"} icon={CreditCard} />
           <StatCard title="Clients" value={overview?.business.clients ?? "—"} icon={Users} />
           <StatCard title="Inventory" value={advanced?.operations.total_inventory ?? "—"} icon={Package} />
@@ -97,7 +99,9 @@ export default function DashboardPage() {
             <StatCard title="ARR" value={`₦${((advanced.revenue.arr || 0) / 1e6).toFixed(1)}M`} icon={TrendingUp} />
             <StatCard title="Churn Rate" value={`${advanced.subscriptions.churn_rate || 0}%`} icon={TrendingDown}
               trend={{ value: advanced.subscriptions.churn_rate || 0, positive: false }} />
-            <StatCard title="Profit Margin" value={`${advanced.financials.profit_margin || 0}%`} icon={Activity} />
+            {advanced.financials && (
+              <StatCard title="Profit Margin" value={`${advanced.financials.profit_margin || 0}%`} icon={Activity} />
+            )}
           </div>
         )}
 
@@ -188,27 +192,46 @@ export default function DashboardPage() {
               ))}
             </CardContent>
           </Card>
-          <Card>
-            <CardHeader><CardTitle className="text-sm font-medium text-slate-600">Financial Breakdown</CardTitle></CardHeader>
-            <CardContent className="space-y-3">
-              {(advanced ? [
-                { label: "Total Order Value", value: formatCurrency(advanced.financials.total_order_value) },
-                { label: "Payments Collected", value: formatCurrency(advanced.financials.total_payments_collected) },
-                { label: "Total Expenses", value: formatCurrency(advanced.financials.total_expenses) },
-                { label: "Outstanding", value: formatCurrency(advanced.financials.outstanding_balance) },
-              ] : [
-                { label: "Order Value", value: `₦${(overview?.money.order_value ?? 0).toLocaleString()}` },
-                { label: "Payments Collected", value: `₦${(overview?.money.payments_collected ?? 0).toLocaleString()}` },
-                { label: "Expenses", value: `₦${(overview?.money.expenses ?? 0).toLocaleString()}` },
-                { label: "Transactions", value: `₦${(overview?.money.transactions_successful ?? 0).toLocaleString()}` },
-              ]).map((item: any) => (
-                <div key={item.label} className="flex justify-between text-sm">
-                  <span className="text-slate-600">{item.label}</span>
-                  <span className="font-semibold">{item.value}</span>
-                </div>
-              ))}
-            </CardContent>
-          </Card>
+          {(advanced?.financials || overview?.money) ? (
+            <Card>
+              <CardHeader><CardTitle className="text-sm font-medium text-slate-600">Financial Breakdown</CardTitle></CardHeader>
+              <CardContent className="space-y-3">
+                {(advanced?.financials ? [
+                  { label: "Total Order Value", value: formatCurrency(advanced.financials.total_order_value) },
+                  { label: "Payments Collected", value: formatCurrency(advanced.financials.total_payments_collected) },
+                  { label: "Total Expenses", value: formatCurrency(advanced.financials.total_expenses) },
+                  { label: "Outstanding", value: formatCurrency(advanced.financials.outstanding_balance) },
+                ] : [
+                  { label: "Order Value", value: `₦${(overview?.money?.order_value ?? 0).toLocaleString()}` },
+                  { label: "Payments Collected", value: `₦${(overview?.money?.payments_collected ?? 0).toLocaleString()}` },
+                  { label: "Expenses", value: `₦${(overview?.money?.expenses ?? 0).toLocaleString()}` },
+                  { label: "Transactions", value: `₦${(overview?.money?.transactions_successful ?? 0).toLocaleString()}` },
+                ]).map((item: any) => (
+                  <div key={item.label} className="flex justify-between text-sm">
+                    <span className="text-slate-600">{item.label}</span>
+                    <span className="font-semibold">{item.value}</span>
+                  </div>
+                ))}
+              </CardContent>
+            </Card>
+          ) : (
+            <Card>
+              <CardHeader><CardTitle className="text-sm font-medium text-slate-600">Operations Overview</CardTitle></CardHeader>
+              <CardContent className="space-y-3">
+                {[
+                  { label: "Total Clients", value: overview?.business.clients },
+                  { label: "Total Orders", value: overview?.business.orders },
+                  { label: "Active Subscriptions", value: overview?.business.active_subscriptions },
+                  { label: "Inventory Items", value: advanced?.operations.total_inventory },
+                ].map((item) => (
+                  <div key={item.label} className="flex justify-between text-sm">
+                    <span className="text-slate-600">{item.label}</span>
+                    <span className="font-semibold">{item.value ?? "—"}</span>
+                  </div>
+                ))}
+              </CardContent>
+            </Card>
+          )}
           <Card>
             <CardHeader><CardTitle className="text-sm font-medium text-slate-600">System Status</CardTitle></CardHeader>
             <CardContent className="space-y-3">

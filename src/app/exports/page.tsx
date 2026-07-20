@@ -4,10 +4,12 @@ import { exportApi as exportsApi } from "@/lib/api"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { PageHeader } from "@/components/shared/page-header"
 import { AppShell } from "@/components/layout/app-shell"
+import { useAuth } from "@/contexts/auth-context"
 import { Button } from "@/components/ui/button"
-import { Download, FileSpreadsheet, Building2, CreditCard, ShoppingBag, Users } from "lucide-react"
+import { Download, FileSpreadsheet, Building2, CreditCard, ShoppingBag } from "lucide-react"
 
 export default function ExportsPage() {
+  const { isOwner } = useAuth()
   const exportOrg = useMutation({ mutationFn: () => exportsApi.organizations() })
   const exportSubs = useMutation({ mutationFn: () => exportsApi.subscriptions() })
   const exportTransactions = useMutation({ mutationFn: () => exportsApi.transactions() })
@@ -20,10 +22,13 @@ export default function ExportsPage() {
   }
 
   const exports = [
-    { label: "Organizations", desc: "All organizations with status, plan, revenue", icon: Building2, mutation: exportOrg, filename: "organizations.csv" },
-    { label: "Subscriptions", desc: "All subscription records with dates and amounts", icon: CreditCard, mutation: exportSubs, filename: "subscriptions.csv" },
-    { label: "Transactions", desc: "All financial transactions", icon: FileSpreadsheet, mutation: exportTransactions, filename: "transactions.csv" },
-    { label: "Orders", desc: "All orders across organizations", icon: ShoppingBag, mutation: exportOrders, filename: "orders.csv" },
+    { label: "Organizations", desc: "Accounts with status and plan", icon: Building2, mutation: exportOrg, filename: "organizations.csv" },
+    { label: "Subscriptions", desc: "Subscription records with dates", icon: CreditCard, mutation: exportSubs, filename: "subscriptions.csv" },
+    { label: "Transactions", desc: "Billing transactions", icon: FileSpreadsheet, mutation: exportTransactions, filename: "transactions.csv" },
+    // Order contents + customer names are merchant business data — owner-only.
+    ...(isOwner
+      ? [{ label: "Orders", desc: "All orders across organizations", icon: ShoppingBag, mutation: exportOrders, filename: "orders.csv" }]
+      : []),
   ]
 
   return (
