@@ -3,15 +3,16 @@ import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { cn } from "@/lib/utils"
 import {
-  LayoutDashboard, Building2, Users, CreditCard, Receipt, ShoppingBag,
-  UserCircle, Package, DollarSign, BarChart3, ScrollText, Megaphone,
-  Shield, Activity, Download, ChevronLeft, Menu, Settings2, Bug,
+  LayoutDashboard, Building2, Users, CreditCard, Receipt, DollarSign,
+  BarChart3, ScrollText, Megaphone, Shield, Activity, Download,
+  ChevronLeft, Menu, Settings2, Bug,
 } from "lucide-react"
 import { useState } from "react"
-import { useAuth } from "@/contexts/auth-context"
 
-// `ownerOnly` items surface merchant business data and are hidden from
-// support-tier staff (the backend also enforces this with 403s).
+// The admin panel deliberately surfaces only account, billing and statistical
+// data that Sartorial needs to run its business. Merchant business records
+// (orders, clients, inventory, expenses) are NOT browsable here — the backend
+// keeps them owner-only for break-glass support, reachable only by direct URL.
 const navItems = [
   { label: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
   { label: "Organizations", href: "/organizations", icon: Building2 },
@@ -19,10 +20,6 @@ const navItems = [
   { label: "Plans", href: "/plans", icon: CreditCard },
   { label: "Subscriptions", href: "/subscriptions", icon: Receipt },
   { label: "Transactions", href: "/transactions", icon: DollarSign },
-  { label: "Orders", href: "/orders", icon: ShoppingBag, ownerOnly: true },
-  { label: "Clients", href: "/clients", icon: UserCircle, ownerOnly: true },
-  { label: "Inventory", href: "/inventory", icon: Package, ownerOnly: true },
-  { label: "Expenses", href: "/expenses", icon: DollarSign, ownerOnly: true },
   { label: "", href: "", icon: undefined, isGroup: true, groupLabel: "TOOLS" },
   { label: "Analytics", href: "/analytics", icon: BarChart3 },
   { label: "Audit Log", href: "/audit-log", icon: ScrollText },
@@ -36,8 +33,7 @@ const navItems = [
 export function Sidebar() {
   const pathname = usePathname()
   const [collapsed, setCollapsed] = useState(false)
-  const { isOwner } = useAuth()
-  const visibleItems = navItems.filter((item) => !item.ownerOnly || isOwner)
+  const visibleItems = navItems
 
   return (
     <aside className={cn(
