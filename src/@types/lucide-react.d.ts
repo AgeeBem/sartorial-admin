@@ -48,6 +48,7 @@ declare module "lucide-react" {
   export const Settings2: Icon
   export const Shield: Icon
   export const ShoppingBag: Icon
+  export const Sparkles: Icon
   export const Target: Icon
   export const Trash2: Icon
   export const TrendingDown: Icon

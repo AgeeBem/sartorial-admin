@@ -115,6 +115,11 @@ export const subsApi = {
   },
   extendTrial: (id: string, days: number) =>
     api.post(`/subscriptions/${id}/extend-trial/`, { days }).then((r) => r.data),
+  activateTrial: (id: string, days: number) =>
+    api.post(`/subscriptions/${id}/activate-trial/`, { days }).then((r) => r.data),
+  forOrganization: (organizationId: string) =>
+    api.get<PaginatedResponse<Subscription>>("/subscriptions/", { params: { organization_id: organizationId } })
+      .then((r) => r.data.results?.[0] ?? null),
 }
 
 // Transactions
