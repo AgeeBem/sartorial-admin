@@ -6,8 +6,15 @@ import { AppShell } from "@/components/layout/app-shell"
 import { PageHeader } from "@/components/shared/page-header"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { CreditCard, Copy, Check, RefreshCw, CheckCircle, XCircle, Power } from "lucide-react"
+import { cn } from "@/lib/utils"
+import { CreditCard, Copy, Check, RefreshCw, CheckCircle, XCircle, Power, Wallet } from "lucide-react"
 import type { PaymentGatewayConfig } from "@/lib/types"
+
+// Brand accents per gateway for a more recognizable, premium feel.
+const BRAND: Record<string, { icon: string; bar: string }> = {
+  paystack: { icon: "bg-sky-50 text-sky-600 ring-sky-600/10", bar: "from-sky-400 to-cyan-400" },
+  flutterwave: { icon: "bg-orange-50 text-orange-600 ring-orange-600/10", bar: "from-orange-400 to-amber-400" },
+}
 
 function CopyField({ label, value, mono = true }: { label: string; value: string; mono?: boolean }) {
   const [copied, setCopied] = useState(false)
@@ -100,14 +107,20 @@ function GatewayCard({ config }: { config: PaymentGatewayConfig }) {
 
   const secretPlaceholder = (isSet: boolean, masked: string) => (isSet ? `${masked} (leave blank to keep)` : "Not set")
 
+  const brand = BRAND[config.gateway] || BRAND.paystack
   return (
-    <Card className={config.is_active ? "ring-2 ring-amber-400" : ""}>
+    <Card className={cn("relative overflow-hidden", config.is_active && "ring-2 ring-emerald-400/60")}>
+      <div className={cn("absolute inset-x-0 top-0 h-1 bg-gradient-to-r", brand.bar)} />
       <CardHeader className="flex-row items-center justify-between">
-        <CardTitle className="flex items-center gap-2">
-          <CreditCard size={16} className="text-slate-500" />
-          {config.gateway_display}
+        <CardTitle className="flex items-center gap-2.5">
+          <span className={cn("flex h-9 w-9 items-center justify-center rounded-xl ring-1 ring-inset", brand.icon)}>
+            <CreditCard size={17} />
+          </span>
+          <span className="text-base font-semibold">{config.gateway_display}</span>
           {config.is_active && (
-            <span className="rounded-full bg-amber-100 px-2 py-0.5 text-[11px] font-semibold text-amber-800">ACTIVE</span>
+            <span className="inline-flex items-center gap-1 rounded-full bg-emerald-50 px-2 py-0.5 text-[11px] font-semibold text-emerald-700 ring-1 ring-inset ring-emerald-600/20">
+              <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" /> ACTIVE
+            </span>
           )}
         </CardTitle>
         <div className="flex items-center gap-2">
@@ -214,8 +227,10 @@ export default function PaymentGatewaysPage() {
   return (
     <AppShell>
       <PageHeader
+        eyebrow="Billing"
         title="Payment Gateways"
         description="Configure Paystack and Flutterwave, choose the active gateway, and set up webhooks. Credentials are encrypted and never shown in full."
+        icon={Wallet}
       />
       {data?.active_gateway == null && !isLoading && (
         <div className="mb-4 rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
