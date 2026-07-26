@@ -2,7 +2,7 @@ import axios from "axios"
 import type {
   ActivityEvent, AdminOverview, AdvancedAnalytics, Announcement, AuditLogEntry,
   CeleryStatus, EventLogEntry, GrowthTrend, LoginHistoryEntry, LoginLogEntry, OrgUsage, Organization, PaginatedResponse,
-  Plan, PlanDistribution, RevenueTrends, StorageUsage, Subscription, SystemHealth,
+  PaymentGatewayConfig, Plan, PlanDistribution, RevenueTrends, StorageUsage, Subscription, SystemHealth,
   TopOrganization, Transaction,
 } from "./types"
 
@@ -172,6 +172,20 @@ export const eventLogApi = {
 export const loginLogsApi = {
   list: (params?: Record<string, string>) =>
     api.get<PaginatedResponse<LoginLogEntry>>("/login-logs/", { params }).then((r) => r.data),
+}
+
+// Payment Gateways (owner-only)
+export const gatewaysApi = {
+  list: () =>
+    api.get<{ gateways: PaymentGatewayConfig[]; active_gateway: string | null }>("/payment-gateways/").then((r) => r.data),
+  update: (gateway: string, data: Partial<Record<string, string | boolean>>) =>
+    api.patch<PaymentGatewayConfig>(`/payment-gateways/${gateway}/`, data).then((r) => r.data),
+  activate: (gateway: string) =>
+    api.post<PaymentGatewayConfig>(`/payment-gateways/${gateway}/activate/`).then((r) => r.data),
+  generateWebhookSecret: (gateway: string) =>
+    api.post<PaymentGatewayConfig>(`/payment-gateways/${gateway}/generate-webhook-secret/`).then((r) => r.data),
+  testConnection: (gateway: string) =>
+    api.post<{ success: boolean; message: string }>(`/payment-gateways/${gateway}/test-connection/`).then((r) => r.data),
 }
 
 // Announcements

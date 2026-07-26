@@ -5,7 +5,7 @@ import { cn } from "@/lib/utils"
 import {
   LayoutDashboard, Building2, CreditCard, Receipt, DollarSign,
   BarChart3, ScrollText, Megaphone, Shield, Activity, Download,
-  ChevronLeft, Menu, Settings2, Bug, LogIn,
+  ChevronLeft, Menu, Settings2, Bug, LogIn, Wallet,
 } from "lucide-react"
 import { useState } from "react"
 
@@ -19,6 +19,7 @@ const navItems = [
   { label: "Organizations", href: "/organizations", icon: Building2 },
   { label: "Plans", href: "/plans", icon: CreditCard },
   { label: "Subscriptions", href: "/subscriptions", icon: Receipt },
+  { label: "Payment Gateways", href: "/payment-gateways", icon: Wallet },
   { label: "Transactions", href: "/transactions", icon: DollarSign },
   { label: "", href: "", icon: undefined, isGroup: true, groupLabel: "TOOLS" },
   { label: "Analytics", href: "/analytics", icon: BarChart3 },

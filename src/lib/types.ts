@@ -40,6 +40,26 @@ export interface LoginLogEntry {
   ip_address: string | null; user_agent: string; created_at: string
 }
 
+export interface PaymentGatewayConfig {
+  id: string
+  gateway: "paystack" | "flutterwave"
+  gateway_display: string
+  is_enabled: boolean
+  is_active: boolean
+  test_mode: boolean
+  is_live: boolean
+  test_public_key: string
+  live_public_key: string
+  webhook_secret: string
+  webhook_url: string
+  uses_webhook_secret: boolean
+  test_secret_key_set: boolean
+  live_secret_key_set: boolean
+  test_secret_key_masked: string
+  live_secret_key_masked: string
+  updated_at: string
+}
+
 export interface Organization {
   id: string; email: string; first_name: string; last_name: string; full_name: string; phone_number: string
   is_active: boolean; date_joined: string; last_login: string | null
