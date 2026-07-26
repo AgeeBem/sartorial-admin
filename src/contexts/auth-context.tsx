@@ -7,12 +7,19 @@ interface AdminUser {
   email: string
   full_name: string
   is_superuser: boolean
+  platform_role?: "none" | "support" | "owner"
+  is_platform_owner?: boolean
+  is_platform_support?: boolean
 }
 
 interface AuthContextType {
   user: AdminUser | null
   token: string | null
   loading: boolean
+  /** Full-access platform staff (owner / legacy superuser). */
+  isOwner: boolean
+  /** Support-tier staff: technical/operational access only. */
+  isSupport: boolean
   login: (email: string, password: string) => Promise<void>
   logout: () => void
 }
@@ -21,9 +28,20 @@ const AuthContext = createContext<AuthContextType>({
   user: null,
   token: null,
   loading: true,
+  isOwner: false,
+  isSupport: false,
   login: async () => {},
   logout: () => {},
 })
+
+// Mirror of the backend's role resolution (owner OR legacy superuser without an
+// explicit platform role). Kept resilient to older stored user shapes.
+function resolveOwner(u: AdminUser | null): boolean {
+  if (!u) return false
+  if (u.is_platform_owner) return true
+  if (u.platform_role === "owner") return true
+  return Boolean(u.is_superuser && (!u.platform_role || u.platform_role === "none"))
+}
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<AdminUser | null>(null)
@@ -43,11 +61,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const login = useCallback(async (email: string, password: string) => {
     const data = await authApi.login(email, password)
     const access = data.access || data.access_token
+    const u = data.user || data
     const userData: AdminUser = {
-      id: data.user?.id || data.id,
-      email: data.user?.email || data.email || email,
-      full_name: data.user?.full_name || data.full_name || email,
-      is_superuser: data.user?.is_superuser ?? true,
+      id: u?.id || data.id,
+      email: u?.email || email,
+      full_name: u?.full_name || email,
+      is_superuser: u?.is_superuser ?? false,
+      platform_role: u?.platform_role,
+      is_platform_owner: u?.is_platform_owner,
+      is_platform_support: u?.is_platform_support,
     }
     localStorage.setItem("admin_access_token", access)
     localStorage.setItem("admin_user", JSON.stringify(userData))
@@ -62,8 +84,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setUser(null)
   }, [])
 
+  const isOwner = resolveOwner(user)
+  const isSupport = Boolean(user) && !isOwner
+
   return (
-    <AuthContext.Provider value={{ user, token, loading, login, logout }}>
+    <AuthContext.Provider value={{ user, token, loading, isOwner, isSupport, login, logout }}>
       {children}
     </AuthContext.Provider>
   )

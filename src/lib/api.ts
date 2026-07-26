@@ -1,7 +1,7 @@
 import axios from "axios"
 import type {
   ActivityEvent, AdminOverview, AdvancedAnalytics, Announcement, AuditLogEntry,
-  CeleryStatus, GrowthTrend, LoginHistoryEntry, Organization, PaginatedResponse,
+  CeleryStatus, EventLogEntry, GrowthTrend, LoginHistoryEntry, LoginLogEntry, OrgUsage, Organization, PaginatedResponse,
   Plan, PlanDistribution, RevenueTrends, StorageUsage, Subscription, SystemHealth,
   TopOrganization, Transaction,
 } from "./types"
@@ -72,6 +72,8 @@ export const orgApi = {
     api.post(`/organizations/${id}/${action}/`).then((r) => r.data),
   activity: (id: string) =>
     api.get<{ organization: any; events: ActivityEvent[] }>(`/organizations/${id}/activity/`).then((r) => r.data),
+  usage: (id: string) =>
+    api.get<OrgUsage>(`/organizations/${id}/usage/`).then((r) => r.data),
 }
 
 // Bulk Operations
@@ -115,6 +117,11 @@ export const subsApi = {
   },
   extendTrial: (id: string, days: number) =>
     api.post(`/subscriptions/${id}/extend-trial/`, { days }).then((r) => r.data),
+  activateTrial: (id: string, days: number) =>
+    api.post(`/subscriptions/${id}/activate-trial/`, { days }).then((r) => r.data),
+  forOrganization: (organizationId: string) =>
+    api.get<PaginatedResponse<Subscription>>("/subscriptions/", { params: { organization_id: organizationId } })
+      .then((r) => r.data.results?.[0] ?? null),
 }
 
 // Transactions
@@ -155,6 +162,18 @@ export const auditApi = {
     api.get<AuditLogEntry>(`/audit-log/${id}/`).then((r) => r.data),
 }
 
+// Event / Error Log (technical support surface)
+export const eventLogApi = {
+  list: (params?: Record<string, string>) =>
+    api.get<PaginatedResponse<EventLogEntry>>("/event-log/", { params }).then((r) => r.data),
+}
+
+// Organization Login Logs
+export const loginLogsApi = {
+  list: (params?: Record<string, string>) =>
+    api.get<PaginatedResponse<LoginLogEntry>>("/login-logs/", { params }).then((r) => r.data),
+}
+
 // Announcements
 export const announcementsApi = {
   list: () =>
@@ -190,10 +209,11 @@ export const securityApi = {
 export const impersonationApi = {
   list: (params?: Record<string, string>) =>
     api.get("/impersonation/sessions/", { params }).then((r) => r.data),
-  generate: (user_id: string, read_only = false) =>
+  // Read-only by default, matching the backend's safer default.
+  generate: (user_id: string, read_only = true) =>
     api.post("/impersonation/token/", { user_id, read_only }).then((r) => r.data),
-  impersonate: (data: { email: string }) =>
-    api.post("/impersonation/token/", data).then((r) => r.data),
+  impersonate: (data: { email: string; read_only?: boolean }) =>
+    api.post("/impersonation/token/", { read_only: true, ...data }).then((r) => r.data),
   revoke: (session_id: string) =>
     api.post("/impersonation/revoke/", { session_id }).then((r) => r.data),
   revokeImpersonation: (id: string) =>

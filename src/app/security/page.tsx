@@ -6,13 +6,15 @@ import { StatusBadge } from "@/components/shared/status-badge"
 import { DataTable } from "@/components/shared/data-table"
 import { PageHeader } from "@/components/shared/page-header"
 import { AppShell } from "@/components/layout/app-shell"
+import { useAuth } from "@/contexts/auth-context"
 import { Button } from "@/components/ui/button"
-import { formatDate, formatDateTime } from "@/lib/utils"
+import { formatDateTime } from "@/lib/utils"
 import { useState } from "react"
-import { Shield, Eye, EyeOff, Ban, Check } from "lucide-react"
+import { Eye, Ban } from "lucide-react"
 
 export default function SecurityPage() {
   const qc = useQueryClient()
+  const { isOwner } = useAuth()
   const { data: impersonations, isLoading } = useQuery({ queryKey: ["security-impersonations"], queryFn: () => impersonationApi.list() })
   const [showImpersonateForm, setShowImpersonateForm] = useState(false)
   const [impersonateEmail, setImpersonateEmail] = useState("")
@@ -30,16 +32,21 @@ export default function SecurityPage() {
     <AppShell>
       <PageHeader title="Security" description="Impersonation, access control, and platform security"
         actions={
-          <Button size="sm" variant="outline" onClick={() => setShowImpersonateForm(!showImpersonateForm)}>
-            <Eye size={14} className="mr-1" /> Impersonate
-          </Button>
+          isOwner ? (
+            <Button size="sm" variant="outline" onClick={() => setShowImpersonateForm(!showImpersonateForm)}>
+              <Eye size={14} className="mr-1" /> Impersonate
+            </Button>
+          ) : null
         }
       />
 
-      {showImpersonateForm && (
+      {isOwner && showImpersonateForm && (
         <Card className="mb-6 border-amber-200">
           <CardHeader><CardTitle className="flex items-center gap-2 text-amber-800"><Eye size={16} /> Impersonate User</CardTitle></CardHeader>
           <CardContent>
+            <p className="mb-3 text-xs text-amber-700">
+              Access is read-only and the account owner is notified. Every session is audit-logged.
+            </p>
             <div className="flex gap-2">
               <input className="flex-1 rounded border border-slate-300 px-3 py-1.5 text-sm" value={impersonateEmail}
                 onChange={e => setImpersonateEmail(e.target.value)} placeholder="user@organization.com" />

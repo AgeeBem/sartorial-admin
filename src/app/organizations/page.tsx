@@ -6,7 +6,7 @@ import { StatusBadge } from "@/components/shared/status-badge"
 import { PageHeader } from "@/components/shared/page-header"
 import { AppShell } from "@/components/layout/app-shell"
 import { Button } from "@/components/ui/button"
-import { formatDate, formatCurrency } from "@/lib/utils"
+import { formatDate, formatDateTime } from "@/lib/utils"
 import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { CheckCircle, XCircle, AlertTriangle } from "lucide-react"
@@ -43,11 +43,11 @@ export default function OrganizationsPage() {
     )},
     { key: "subscription_status", header: "Sub Status", render: (o: Organization) => o.subscription_status ? <StatusBadge status={o.subscription_status} /> :               <span className="text-slate-500">—</span> },
     { key: "staff_count", header: "Staff" },
-    { key: "client_count", header: "Clients" },
     { key: "order_count", header: "Orders" },
     { key: "inventory_count", header: "Inventory" },
-    { key: "revenue", header: "Revenue", render: (o: Organization) => formatCurrency(o.revenue) },
+    { key: "expense_count", header: "Expenses" },
     { key: "date_joined", header: "Joined", render: (o: Organization) => formatDate(o.date_joined) },
+    { key: "last_login", header: "Last Login", render: (o: Organization) => o.last_login ? formatDateTime(o.last_login) : "Never" },
   ]
 
   return (

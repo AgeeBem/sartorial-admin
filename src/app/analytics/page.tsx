@@ -80,15 +80,13 @@ export default function AnalyticsPage() {
             ))}
           </CardContent>
         </Card>
-        <Card><CardHeader><CardTitle className="text-sm font-medium text-slate-600">Financial Health</CardTitle></CardHeader>
+        <Card><CardHeader><CardTitle className="text-sm font-medium text-slate-600">Platform Usage</CardTitle></CardHeader>
           <CardContent className="space-y-3">
             {[
-              ["Total Order Value", formatCurrency(advanced.financials.total_order_value)],
-              ["Payments Collected", formatCurrency(advanced.financials.total_payments_collected)],
-              ["Total Expenses", formatCurrency(advanced.financials.total_expenses)],
-              ["Profit", formatCurrency(advanced.financials.profit)],
-              ["Profit Margin", `${advanced.financials.profit_margin}%`],
-              ["Outstanding Balance", formatCurrency(advanced.financials.outstanding_balance)],
+              ["Organizations", formatNumber(advanced.organizations.total)],
+              ["Total Clients", formatNumber(advanced.usage.total_clients)],
+              ["Inventory Items", formatNumber(advanced.usage.total_inventory)],
+              ["Conversion Rate", `${advanced.subscriptions.conversion_rate}%`],
             ].map(([label, val]) => (
               <div key={label} className="flex justify-between text-sm">
                 <span className="text-slate-600">{label}</span>
@@ -99,12 +97,12 @@ export default function AnalyticsPage() {
         </Card>
       </div>
 
-      {trends && trends.order_payments && trends.order_payments.length > 0 && (
+      {trends && trends.subscription_revenue && trends.subscription_revenue.length > 0 && (
         <Card>
-          <CardHeader><CardTitle className="text-base">Monthly Order Payments</CardTitle></CardHeader>
+          <CardHeader><CardTitle className="text-base">Monthly Subscription Revenue</CardTitle></CardHeader>
           <CardContent>
             <ResponsiveContainer width="100%" height={280}>
-              <BarChart data={trends.order_payments.slice(-12).map((m: any) => ({ month: m.month?.slice(0, 3) || "", amount: Number(m.amount) || 0 }))}
+              <BarChart data={trends.subscription_revenue.slice(-12).map((m) => ({ month: m.month?.slice(0, 7) || "", amount: Number(m.revenue) || 0 }))}
                 margin={{ top: 8, right: 8, left: -16, bottom: 0 }}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
                 <XAxis dataKey="month" tick={{ fontSize: 12, fill: "#64748b" }} axisLine={{ stroke: "#e2e8f0" }} tickLine={false} />
@@ -137,21 +135,19 @@ export default function AnalyticsPage() {
           </CardContent>
         </Card>
         <Card>
-          <CardHeader><CardTitle className="text-sm font-medium text-slate-600">Operations</CardTitle></CardHeader>
+          <CardHeader><CardTitle className="text-sm font-medium text-slate-600">Subscription Health</CardTitle></CardHeader>
           <CardContent className="space-y-3">
             {[
-              ["Total Clients", advanced.operations.total_clients],
-              ["Total Orders", advanced.operations.total_orders],
-              ["Pending", advanced.operations.pending_orders],
-              ["In Progress", advanced.operations.in_progress_orders],
-              ["Completed", advanced.operations.completed_orders],
-              ["Overdue", advanced.operations.overdue_orders],
-              ["Inventory Items", advanced.operations.total_inventory],
-              ["Low Stock", advanced.operations.low_stock_items],
+              ["Total", advanced.subscriptions.total],
+              ["Active", advanced.subscriptions.active],
+              ["Free", advanced.subscriptions.free],
+              ["Past Due", advanced.subscriptions.past_due],
+              ["Churned", advanced.subscriptions.churned],
+              ["Churn Rate", `${advanced.subscriptions.churn_rate}%`],
             ].map(([label, val]) => (
               <div key={label} className="flex justify-between text-sm">
                 <span className="text-slate-600">{label}</span>
-                <span className="font-semibold">{formatNumber(val)}</span>
+                <span className="font-semibold">{typeof val === "number" ? formatNumber(val) : val || "—"}</span>
               </div>
             ))}
           </CardContent>

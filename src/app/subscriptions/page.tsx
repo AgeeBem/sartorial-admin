@@ -17,25 +17,33 @@ export default function SubscriptionsPage() {
   const [page, setPage] = useState(1)
   const [search, setSearch] = useState("")
   const [showOverride, setShowOverride] = useState(false)
-  const [overrideForm, setOverrideForm] = useState({ subscription_id: "", price: "", status: "active", end_date: "" })
+  const emptyForm = { subscription_id: "", status: "active", extend_days: "", reason: "" }
+  const [overrideForm, setOverrideForm] = useState(emptyForm)
 
   const { data, isLoading } = useQuery({
     queryKey: ["subscriptions", page, search],
     queryFn: () => subsApi.list({ page: String(page), page_size: "15", search }),
+  })
+  // A flat list used to populate the override picker (choose by organization,
+  // never by pasting a UUID).
+  const { data: allSubs } = useQuery({
+    queryKey: ["subscriptions-all"],
+    queryFn: () => subsApi.list({ page_size: "200" }),
   })
   const { data: history } = useQuery({
     queryKey: ["subscriptions-history"],
     queryFn: () => subsApi.history({ limit: "10" }),
   })
 
+  const subOptions = (allSubs?.results || data?.results || []) as Subscription[]
+
   const overrideMutation = useMutation({
-    mutationFn: () => subsApi.override({
-      subscription_id: Number(overrideForm.subscription_id) || 0,
-      price: overrideForm.price ? Number(overrideForm.price) : undefined,
+    mutationFn: () => subsApi.override(overrideForm.subscription_id, {
       status: overrideForm.status || undefined,
-      end_date: overrideForm.end_date || undefined,
+      extend_days: overrideForm.extend_days ? Number(overrideForm.extend_days) : undefined,
+      reason: overrideForm.reason || undefined,
     }),
-    onSuccess: () => { qc.invalidateQueries({ queryKey: ["subscriptions"] }); setShowOverride(false); setOverrideForm({ subscription_id: "", price: "", status: "active", end_date: "" }) },
+    onSuccess: () => { qc.invalidateQueries({ queryKey: ["subscriptions"] }); setShowOverride(false); setOverrideForm(emptyForm) },
   })
 
   const totalPages = data ? Math.ceil(data.count / 15) : 0
@@ -55,18 +63,28 @@ export default function SubscriptionsPage() {
           <CardHeader><CardTitle className="text-base">Subscription Override</CardTitle></CardHeader>
           <CardContent>
             <div className="grid gap-4 sm:grid-cols-4">
-              <div><label className="block text-xs font-medium text-slate-600 mb-1">Subscription ID</label>
-                <input className="w-full rounded border border-slate-300 px-3 py-1.5 text-sm" value={overrideForm.subscription_id} onChange={e => setOverrideForm(f => ({ ...f, subscription_id: e.target.value }))} /></div>
-              <div><label className="block text-xs font-medium text-slate-600 mb-1">Override Price</label>
-                <input type="number" className="w-full rounded border border-slate-300 px-3 py-1.5 text-sm" value={overrideForm.price} onChange={e => setOverrideForm(f => ({ ...f, price: e.target.value }))} /></div>
-              <div><label className="block text-xs font-medium text-slate-600 mb-1">Status</label>
-                <select className="w-full rounded border border-slate-300 px-3 py-1.5 text-sm" value={overrideForm.status} onChange={e => setOverrideForm(f => ({ ...f, status: e.target.value }))}>
-                  <option value="active">Active</option><option value="expired">Expired</option><option value="cancelled">Cancelled</option><option value="trial">Trial</option>
+              <div className="sm:col-span-2"><label className="block text-xs font-medium text-slate-600 mb-1">Subscription</label>
+                <select className="w-full rounded border border-slate-300 px-3 py-1.5 text-sm bg-white" value={overrideForm.subscription_id} onChange={e => setOverrideForm(f => ({ ...f, subscription_id: e.target.value }))}>
+                  <option value="">Select an organization…</option>
+                  {subOptions.map((s) => (
+                    <option key={s.id} value={s.id}>
+                      {(s.organization_email || s.organization_name || "Unknown")} — {(s.plan_name || "No plan")} ({s.status})
+                    </option>
+                  ))}
                 </select></div>
-              <div><label className="block text-xs font-medium text-slate-600 mb-1">End Date</label>
-                <input type="date" className="w-full rounded border border-slate-300 px-3 py-1.5 text-sm" value={overrideForm.end_date} onChange={e => setOverrideForm(f => ({ ...f, end_date: e.target.value }))} /></div>
+              <div><label className="block text-xs font-medium text-slate-600 mb-1">Status</label>
+                <select className="w-full rounded border border-slate-300 px-3 py-1.5 text-sm bg-white" value={overrideForm.status} onChange={e => setOverrideForm(f => ({ ...f, status: e.target.value }))}>
+                  <option value="active">Active</option><option value="trialing">Trialing</option><option value="free">Free</option><option value="expired">Expired</option><option value="cancelled">Cancelled</option><option value="past_due">Past Due</option>
+                </select></div>
+              <div><label className="block text-xs font-medium text-slate-600 mb-1">Extend (days)</label>
+                <input type="number" min="0" placeholder="0" className="w-full rounded border border-slate-300 px-3 py-1.5 text-sm" value={overrideForm.extend_days} onChange={e => setOverrideForm(f => ({ ...f, extend_days: e.target.value }))} /></div>
+              <div className="sm:col-span-4"><label className="block text-xs font-medium text-slate-600 mb-1">Reason</label>
+                <input className="w-full rounded border border-slate-300 px-3 py-1.5 text-sm" placeholder="Why is this override being applied?" value={overrideForm.reason} onChange={e => setOverrideForm(f => ({ ...f, reason: e.target.value }))} /></div>
             </div>
-            <Button size="sm" className="mt-3" onClick={() => overrideMutation.mutate()}>Apply Override</Button>
+            <Button size="sm" className="mt-3" disabled={!overrideForm.subscription_id || overrideMutation.isPending}
+              onClick={() => overrideMutation.mutate()}>
+              {overrideMutation.isPending ? "Applying…" : "Apply Override"}
+            </Button>
           </CardContent>
         </Card>
       )}
@@ -79,7 +97,6 @@ export default function SubscriptionsPage() {
 
       <DataTable
         columns={[
-          { key: "id", header: "ID" },
           { key: "organization", header: "Organization", render: (s: any) => s.organization_email || s.organization || "—" },
           { key: "plan", header: "Plan", render: (s: any) => s.plan_name || s.plan || "—" },
           { key: "status", header: "Status", render: (s: Subscription) => <StatusBadge status={s.status} /> },

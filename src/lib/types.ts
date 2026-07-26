@@ -1,24 +1,51 @@
 export interface AdminOverview {
   users: { total: number; super_admins: number; organizations: number; staff: number; inactive: number }
-  business: { clients: number; orders: number; orders_this_month: number; active_subscriptions: number; expired_subscriptions: number }
-  money: { order_value: number; payments_collected: number; expenses: number; transactions_successful: number }
-  operations: { low_stock_items: number; overdue_orders: number; pending_orders: number }
+  // Platform activity counts + subscription health (no clients).
+  accounts: {
+    orders: number; inventory_items: number; expenses: number
+    active_subscriptions: number; trialing_subscriptions: number
+    expired_subscriptions: number; past_due_subscriptions: number
+  }
+  // Sartorial's own revenue (what merchants pay Sartorial).
+  billing: { subscription_revenue: number; revenue_this_month: number; new_organizations_this_month: number }
 }
 
 export interface AdvancedAnalytics {
   revenue: { total_revenue: number; this_month: number; prev_month: number; mrr: number; arr: number; growth_rate: number }
   organizations: { total: number; active: number; inactive: number; this_month_new: number; growth_rate: number }
   subscriptions: { total: number; active: number; churned: number; churn_rate: number; conversion_rate: number; free: number; past_due: number }
-  financials: { total_order_value: number; total_payments_collected: number; total_expenses: number; profit: number; profit_margin: number; outstanding_balance: number }
-  operations: { total_clients: number; total_orders: number; pending_orders: number; overdue_orders: number; completed_orders: number; in_progress_orders: number; total_inventory: number; low_stock_items: number }
+  usage: { total_clients: number; total_inventory: number }
+}
+
+export interface OrgUsage {
+  plan_name: string; plan_active: boolean; usage_warning_pct: number
+  features: Record<string, boolean>
+  // No client usage — the org's customers are the org's business.
+  orders_count: number; orders_limit: number; orders_remaining: number | null; orders_percentage: number
+  staff_count: number; staff_limit: number; staff_remaining: number | null; staff_percentage: number
+  inventory_count: number; inventory_limit: number; inventory_remaining: number | null; inventory_percentage: number
+}
+
+export interface EventLogEntry {
+  id: string; level: "info" | "warning" | "error"; event_type: string
+  source: string; message: string; path: string; method: string
+  status_code: number | null; organization: string | null
+  organization_email?: string; created_at: string
+}
+
+export interface LoginLogEntry {
+  id: string; user: string | null; user_email?: string; user_name?: string
+  organization: string | null; organization_email?: string; organization_name?: string
+  email: string; role: string; success: boolean
+  ip_address: string | null; user_agent: string; created_at: string
 }
 
 export interface Organization {
   id: string; email: string; first_name: string; last_name: string; full_name: string; phone_number: string
   is_active: boolean; date_joined: string; last_login: string | null
-  staff_count: number; client_count: number; order_count: number; inventory_count: number
-  subscription_status: string | null; subscription_plan: string | null; revenue: number
-  expense_total?: number; outstanding_balance?: number
+  // Statistical activity counts only — no clients (the org's own customers).
+  staff_count: number; inventory_count: number; order_count: number; expense_count: number
+  subscription_status: string | null; subscription_plan: string | null
 }
 
 export interface AuditLogEntry {
@@ -75,9 +102,7 @@ export interface GrowthTrend {
 
 export interface RevenueTrends {
   period: { start: string; end: string }
-  subscription_revenue: Array<{ month: string; amount: number }>
-  order_payments: Array<{ month: string; amount: number }>
-  expenses: Array<{ month: string; amount: number }>
+  subscription_revenue: Array<{ month: string; revenue: number; transactions: number }>
 }
 
 export interface PlanDistribution {
