@@ -99,7 +99,7 @@ export default function OrganizationDetailPage() {
         </div></CardContent></Card>
         <Card><CardContent className="p-4"><div className="flex items-center gap-3">
           <div className="rounded-lg bg-emerald-100 p-2"><ShoppingBag size={18} className="text-emerald-600" /></div>
-          <div><p className="text-xs text-slate-600">Orders / Inventory</p><p className="text-lg font-bold">{org.order_count} / {org.inventory_count}</p></div>
+          <div><p className="text-xs text-slate-600">Orders / Inventory</p><p className="text-lg font-bold">{org.order_count ?? "—"} / {org.inventory_count ?? "—"}</p></div>
         </div></CardContent></Card>
         <Card><CardContent className="p-4"><div className="flex items-center gap-3">
           <div className="rounded-lg bg-amber-100 p-2"><CreditCard size={18} className="text-amber-600" /></div>
@@ -191,10 +191,10 @@ export default function OrganizationDetailPage() {
               ["Plan", org.subscription_plan || "—"],
               ["Sub Status", org.subscription_status || "—"],
               ["Phone", org.phone_number || "—"],
-              ["Staff", String(org.staff_count)],
-              ["Orders", String(org.order_count)],
-              ["Inventory", String(org.inventory_count)],
-              ["Expenses", String(org.expense_count)],
+              ["Staff", org.staff_count ?? "—"],
+              ["Orders", org.order_count ?? "—"],
+              ["Inventory", org.inventory_count ?? "—"],
+              ["Expenses", org.expense_count ?? "—"],
               ["Last Login", org.last_login ? formatDateTime(org.last_login) : "Never"],
             ].map(([label, value]) => (
               <div key={label} className="flex justify-between text-sm">
