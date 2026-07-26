@@ -1,7 +1,7 @@
 import axios from "axios"
 import type {
   ActivityEvent, AdminOverview, AdvancedAnalytics, Announcement, AuditLogEntry,
-  CeleryStatus, EventLogEntry, GrowthTrend, LoginHistoryEntry, OrgUsage, Organization, PaginatedResponse,
+  CeleryStatus, EventLogEntry, GrowthTrend, LoginHistoryEntry, LoginLogEntry, OrgUsage, Organization, PaginatedResponse,
   Plan, PlanDistribution, RevenueTrends, StorageUsage, Subscription, SystemHealth,
   TopOrganization, Transaction,
 } from "./types"
@@ -166,6 +166,12 @@ export const auditApi = {
 export const eventLogApi = {
   list: (params?: Record<string, string>) =>
     api.get<PaginatedResponse<EventLogEntry>>("/event-log/", { params }).then((r) => r.data),
+}
+
+// Organization Login Logs
+export const loginLogsApi = {
+  list: (params?: Record<string, string>) =>
+    api.get<PaginatedResponse<LoginLogEntry>>("/login-logs/", { params }).then((r) => r.data),
 }
 
 // Announcements

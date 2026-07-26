@@ -33,6 +33,13 @@ export interface EventLogEntry {
   organization_email?: string; created_at: string
 }
 
+export interface LoginLogEntry {
+  id: string; user: string | null; user_email?: string; user_name?: string
+  organization: string | null; organization_email?: string; organization_name?: string
+  email: string; role: string; success: boolean
+  ip_address: string | null; user_agent: string; created_at: string
+}
+
 export interface Organization {
   id: string; email: string; first_name: string; last_name: string; full_name: string; phone_number: string
   is_active: boolean; date_joined: string; last_login: string | null

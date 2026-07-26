@@ -5,7 +5,7 @@ import { cn } from "@/lib/utils"
 import {
   LayoutDashboard, Building2, CreditCard, Receipt, DollarSign,
   BarChart3, ScrollText, Megaphone, Shield, Activity, Download,
-  ChevronLeft, Menu, Settings2, Bug,
+  ChevronLeft, Menu, Settings2, Bug, LogIn,
 } from "lucide-react"
 import { useState } from "react"
 
@@ -23,6 +23,7 @@ const navItems = [
   { label: "", href: "", icon: undefined, isGroup: true, groupLabel: "TOOLS" },
   { label: "Analytics", href: "/analytics", icon: BarChart3 },
   { label: "Audit Log", href: "/audit-log", icon: ScrollText },
+  { label: "Login Logs", href: "/login-logs", icon: LogIn },
   { label: "Event Log", href: "/event-log", icon: Bug },
   { label: "Announcements", href: "/announcements", icon: Megaphone },
   { label: "System Health", href: "/system", icon: Activity },
