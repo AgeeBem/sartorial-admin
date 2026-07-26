@@ -21,6 +21,7 @@ declare module "lucide-react" {
   export const Database: Icon
   export const DollarSign: Icon
   export const Download: Icon
+  export const Gauge: Icon
   export const Edit: Icon
   export const Eye: Icon
   export const EyeOff: Icon

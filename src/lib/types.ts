@@ -17,6 +17,15 @@ export interface AdvancedAnalytics {
   usage: { total_clients: number; total_inventory: number }
 }
 
+export interface OrgUsage {
+  plan_name: string; plan_active: boolean; usage_warning_pct: number
+  features: Record<string, boolean>
+  clients_count: number; clients_limit: number; clients_remaining: number | null; clients_percentage: number
+  orders_count: number; orders_limit: number; orders_remaining: number | null; orders_percentage: number
+  staff_count: number; staff_limit: number; staff_remaining: number | null; staff_percentage: number
+  inventory_count: number; inventory_limit: number; inventory_remaining: number | null; inventory_percentage: number
+}
+
 export interface EventLogEntry {
   id: string; level: "info" | "warning" | "error"; event_type: string
   source: string; message: string; path: string; method: string

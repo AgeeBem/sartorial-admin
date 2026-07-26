@@ -10,7 +10,7 @@ import { Button } from "@/components/ui/button"
 import { formatDate, formatCurrency, formatDateTime } from "@/lib/utils"
 import { useParams, useRouter } from "next/navigation"
 import { useState } from "react"
-import { ArrowLeft, Building2, Users, Package, CreditCard, Activity, Clock, Sparkles, CheckCircle } from "lucide-react"
+import { ArrowLeft, Building2, Users, Package, CreditCard, Activity, Clock, Sparkles, CheckCircle, Gauge } from "lucide-react"
 import type { ActivityEvent, Plan, Subscription } from "@/lib/types"
 
 // Colour-coded urgency for the remaining trial/period window.
@@ -41,6 +41,7 @@ export default function OrganizationDetailPage() {
     queryFn: () => usersApi.list({ organization_id: id, role: "Staff", page_size: "100" }),
   })
   const { data: plans } = useQuery({ queryKey: ["plans"], queryFn: () => plansApi.list() })
+  const { data: usage } = useQuery({ queryKey: ["organization-usage", id], queryFn: () => orgApi.usage(id) })
 
   const invalidateSub = () => {
     qc.invalidateQueries({ queryKey: ["organization-subscription", id] })
@@ -209,6 +210,55 @@ export default function OrganizationDetailPage() {
           </CardContent>
         </Card>
       </div>
+
+      {/* Plan usage — how the org tracks against its plan limits */}
+      {usage && (
+        <Card className="mb-6">
+          <CardHeader className="flex-row items-center justify-between">
+            <CardTitle className="flex items-center gap-2"><Gauge size={16} /> Plan Usage</CardTitle>
+            <span className="text-xs text-slate-500">
+              {usage.plan_name}{usage.plan_active === false ? " · lapsed" : ""}
+            </span>
+          </CardHeader>
+          <CardContent>
+            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+              {([
+                ["Clients", "clients"],
+                ["Orders", "orders"],
+                ["Team", "staff"],
+                ["Inventory", "inventory"],
+              ] as const).map(([label, key]) => {
+                const count = (usage as any)[`${key}_count`] ?? 0
+                const limit = (usage as any)[`${key}_limit`]
+                const pctRaw = (usage as any)[`${key}_percentage`] ?? 0
+                const unlimited = limit === -1
+                const remaining = (usage as any)[`${key}_remaining`]
+                const atLimit = !unlimited && (remaining ?? 0) <= 0
+                const warnAt = usage.usage_warning_pct ?? 80
+                const barColor = atLimit ? "bg-red-500" : pctRaw >= warnAt ? "bg-amber-500" : "bg-indigo-500"
+                return (
+                  <div key={key}>
+                    <div className="flex items-center justify-between text-xs mb-1">
+                      <span className="text-slate-600">{label}</span>
+                      <span className={atLimit ? "font-semibold text-red-600" : "font-medium text-slate-700"}>
+                        {count} / {unlimited ? "∞" : limit}
+                      </span>
+                    </div>
+                    {!unlimited && (
+                      <div className="h-2 w-full rounded-full bg-slate-100 overflow-hidden">
+                        <div className={`h-2 rounded-full ${barColor}`} style={{ width: `${Math.min(pctRaw, 100)}%` }} />
+                      </div>
+                    )}
+                    <p className="mt-1 text-[11px] text-slate-500">
+                      {unlimited ? "Unlimited" : atLimit ? "Limit reached" : `${remaining} left · ${pctRaw}%`}
+                    </p>
+                  </div>
+                )
+              })}
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
       {/* Team — users created by this organization */}
       <Card className="mb-6">

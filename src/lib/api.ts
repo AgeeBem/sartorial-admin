@@ -1,7 +1,7 @@
 import axios from "axios"
 import type {
   ActivityEvent, AdminOverview, AdvancedAnalytics, Announcement, AuditLogEntry,
-  CeleryStatus, EventLogEntry, GrowthTrend, LoginHistoryEntry, Organization, PaginatedResponse,
+  CeleryStatus, EventLogEntry, GrowthTrend, LoginHistoryEntry, OrgUsage, Organization, PaginatedResponse,
   Plan, PlanDistribution, RevenueTrends, StorageUsage, Subscription, SystemHealth,
   TopOrganization, Transaction,
 } from "./types"
@@ -72,6 +72,8 @@ export const orgApi = {
     api.post(`/organizations/${id}/${action}/`).then((r) => r.data),
   activity: (id: string) =>
     api.get<{ organization: any; events: ActivityEvent[] }>(`/organizations/${id}/activity/`).then((r) => r.data),
+  usage: (id: string) =>
+    api.get<OrgUsage>(`/organizations/${id}/usage/`).then((r) => r.data),
 }
 
 // Bulk Operations
