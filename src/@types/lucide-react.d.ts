@@ -5,6 +5,9 @@ declare module "lucide-react" {
   type LucideIcon = Icon
   export const Activity: Icon
   export const AlertTriangle: Icon
+  export const Copy: Icon
+  export const Power: Icon
+  export const Wallet: Icon
   export const ArrowLeft: Icon
   export const Ban: Icon
   export const BarChart3: Icon
