@@ -1,8 +1,8 @@
 export interface AdminOverview {
   users: { total: number; super_admins: number; organizations: number; staff: number; inactive: number }
-  // Usage counts + subscription health (Sartorial's concern; no merchant orders).
+  // Platform activity counts + subscription health (no clients).
   accounts: {
-    clients: number; inventory_items: number
+    orders: number; inventory_items: number; expenses: number
     active_subscriptions: number; trialing_subscriptions: number
     expired_subscriptions: number; past_due_subscriptions: number
   }
@@ -20,7 +20,7 @@ export interface AdvancedAnalytics {
 export interface OrgUsage {
   plan_name: string; plan_active: boolean; usage_warning_pct: number
   features: Record<string, boolean>
-  clients_count: number; clients_limit: number; clients_remaining: number | null; clients_percentage: number
+  // No client usage — the org's customers are the org's business.
   orders_count: number; orders_limit: number; orders_remaining: number | null; orders_percentage: number
   staff_count: number; staff_limit: number; staff_remaining: number | null; staff_percentage: number
   inventory_count: number; inventory_limit: number; inventory_remaining: number | null; inventory_percentage: number
@@ -36,8 +36,8 @@ export interface EventLogEntry {
 export interface Organization {
   id: string; email: string; first_name: string; last_name: string; full_name: string; phone_number: string
   is_active: boolean; date_joined: string; last_login: string | null
-  // Usage counts only — no order counts or financials (merchant business data).
-  staff_count: number; client_count: number; inventory_count: number
+  // Statistical activity counts only — no clients (the org's own customers).
+  staff_count: number; inventory_count: number; order_count: number; expense_count: number
   subscription_status: string | null; subscription_plan: string | null
 }
 

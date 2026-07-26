@@ -1,16 +1,15 @@
 "use client"
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
-import { orgApi, subsApi, usersApi, plansApi } from "@/lib/api"
+import { orgApi, subsApi, plansApi } from "@/lib/api"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { StatusBadge } from "@/components/shared/status-badge"
-import { DataTable } from "@/components/shared/data-table"
 import { PageHeader } from "@/components/shared/page-header"
 import { AppShell } from "@/components/layout/app-shell"
 import { Button } from "@/components/ui/button"
 import { formatDate, formatCurrency, formatDateTime } from "@/lib/utils"
 import { useParams, useRouter } from "next/navigation"
 import { useState } from "react"
-import { ArrowLeft, Building2, Users, Package, CreditCard, Activity, Clock, Sparkles, CheckCircle, Gauge } from "lucide-react"
+import { ArrowLeft, Building2, Users, ShoppingBag, CreditCard, Activity, Clock, Sparkles, CheckCircle, Gauge } from "lucide-react"
 import type { ActivityEvent, Plan, Subscription } from "@/lib/types"
 
 // Colour-coded urgency for the remaining trial/period window.
@@ -36,10 +35,6 @@ export default function OrganizationDetailPage() {
   const { data: org, isLoading } = useQuery({ queryKey: ["organization", id], queryFn: () => orgApi.get(id) })
   const { data: activity } = useQuery({ queryKey: ["organization-activity", id], queryFn: () => orgApi.activity(id) })
   const { data: sub } = useQuery({ queryKey: ["organization-subscription", id], queryFn: () => subsApi.forOrganization(id) })
-  const { data: staff, isLoading: staffLoading } = useQuery({
-    queryKey: ["organization-staff", id],
-    queryFn: () => usersApi.list({ organization_id: id, role: "Staff", page_size: "100" }),
-  })
   const { data: plans } = useQuery({ queryKey: ["plans"], queryFn: () => plansApi.list() })
   const { data: usage } = useQuery({ queryKey: ["organization-usage", id], queryFn: () => orgApi.usage(id) })
 
@@ -75,7 +70,6 @@ export default function OrganizationDetailPage() {
   const busy = activateTrial.isPending || extendTrial.isPending || changePlan.isPending
   const expiry = expiryTone(sub ?? null)
   const planList = (plans?.results || []) as Plan[]
-  const staffRows = staff?.results || []
 
   return (
     <AppShell>
@@ -101,11 +95,11 @@ export default function OrganizationDetailPage() {
         </div></CardContent></Card>
         <Card><CardContent className="p-4"><div className="flex items-center gap-3">
           <div className="rounded-lg bg-purple-100 p-2"><Users size={18} className="text-purple-600" /></div>
-          <div><p className="text-xs text-slate-600">Staff / Clients</p><p className="text-lg font-bold">{org.staff_count} / {org.client_count}</p></div>
+          <div><p className="text-xs text-slate-600">Staff</p><p className="text-lg font-bold">{org.staff_count}</p></div>
         </div></CardContent></Card>
         <Card><CardContent className="p-4"><div className="flex items-center gap-3">
-          <div className="rounded-lg bg-emerald-100 p-2"><Package size={18} className="text-emerald-600" /></div>
-          <div><p className="text-xs text-slate-600">Inventory Items</p><p className="text-lg font-bold">{org.inventory_count}</p></div>
+          <div className="rounded-lg bg-emerald-100 p-2"><ShoppingBag size={18} className="text-emerald-600" /></div>
+          <div><p className="text-xs text-slate-600">Orders / Inventory</p><p className="text-lg font-bold">{org.order_count} / {org.inventory_count}</p></div>
         </div></CardContent></Card>
         <Card><CardContent className="p-4"><div className="flex items-center gap-3">
           <div className="rounded-lg bg-amber-100 p-2"><CreditCard size={18} className="text-amber-600" /></div>
@@ -198,8 +192,9 @@ export default function OrganizationDetailPage() {
               ["Sub Status", org.subscription_status || "—"],
               ["Phone", org.phone_number || "—"],
               ["Staff", String(org.staff_count)],
-              ["Clients", String(org.client_count)],
+              ["Orders", String(org.order_count)],
               ["Inventory", String(org.inventory_count)],
+              ["Expenses", String(org.expense_count)],
               ["Last Login", org.last_login ? formatDateTime(org.last_login) : "Never"],
             ].map(([label, value]) => (
               <div key={label} className="flex justify-between text-sm">
@@ -221,9 +216,8 @@ export default function OrganizationDetailPage() {
             </span>
           </CardHeader>
           <CardContent>
-            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            <div className="grid gap-4 sm:grid-cols-3">
               {([
-                ["Clients", "clients"],
                 ["Orders", "orders"],
                 ["Team", "staff"],
                 ["Inventory", "inventory"],
@@ -260,23 +254,6 @@ export default function OrganizationDetailPage() {
         </Card>
       )}
 
-      {/* Team — users created by this organization */}
-      <Card className="mb-6">
-        <CardHeader><CardTitle className="flex items-center gap-2"><Users size={16} /> Team ({staff?.count ?? staffRows.length})</CardTitle></CardHeader>
-        <CardContent className="p-0">
-          <DataTable
-            columns={[
-              { key: "full_name", header: "Name", render: (u: any) => u.full_name || `${u.first_name || ""} ${u.last_name || ""}`.trim() || "—" },
-              { key: "email", header: "Email" },
-              { key: "staff_role", header: "Role", render: (u: any) => u.staff_role || u.department || "Staff" },
-              { key: "is_active", header: "Status", render: (u: any) => <StatusBadge status={u.is_active ? "active" : "inactive"} /> },
-              { key: "date_joined", header: "Joined", render: (u: any) => formatDate(u.date_joined) },
-            ]}
-            data={staffRows} loading={staffLoading}
-            emptyMessage="This organization has no staff members yet."
-          />
-        </CardContent>
-      </Card>
 
       {/* Activity timeline */}
       <Card>

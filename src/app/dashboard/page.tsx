@@ -7,7 +7,7 @@ import { StatusBadge } from "@/components/shared/status-badge"
 import { AppShell } from "@/components/layout/app-shell"
 import { formatCurrency } from "@/lib/utils"
 import {
-  Building2, Users, DollarSign, UserCircle, AlertTriangle,
+  Building2, Users, DollarSign, ShoppingBag, AlertTriangle,
   CreditCard, TrendingUp, TrendingDown, Sparkles,
 } from "lucide-react"
 import {
@@ -79,7 +79,7 @@ export default function DashboardPage() {
             description={`${overview?.billing.new_organizations_this_month ?? 0} new this month`} />
           <StatCard title="Total Users" value={overview?.users.total ?? "—"} icon={Users}
             description={`${overview?.users.staff ?? 0} staff`} />
-          <StatCard title="Clients" value={overview?.accounts.clients ?? "—"} icon={UserCircle} />
+          <StatCard title="Orders" value={overview?.accounts.orders ?? "—"} icon={ShoppingBag} />
           <StatCard title="Active Subs" value={overview?.accounts.active_subscriptions ?? "—"} icon={CreditCard}
             description={`${overview?.accounts.trialing_subscriptions ?? 0} trialing`} />
           <StatCard title="MRR" value={`₦${((advanced?.revenue.mrr || 0) / 1e3).toFixed(0)}K`} icon={TrendingUp}
@@ -203,8 +203,12 @@ export default function DashboardPage() {
                 <span className="text-sm font-semibold">{overview?.users.organizations ?? "—"}</span>
               </div>
               <div className="flex items-center justify-between">
-                <span className="text-sm text-slate-600">Clients</span>
-                <span className="text-sm font-semibold">{overview?.accounts.clients ?? "—"}</span>
+                <span className="text-sm text-slate-600">Orders</span>
+                <span className="text-sm font-semibold">{overview?.accounts.orders ?? "—"}</span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-sm text-slate-600">Expenses</span>
+                <span className="text-sm font-semibold">{overview?.accounts.expenses ?? "—"}</span>
               </div>
             </CardContent>
           </Card>
