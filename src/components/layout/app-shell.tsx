@@ -17,11 +17,11 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   if (!user) return null
 
   return (
-    <div className="flex min-h-screen bg-slate-50">
+    <div className="flex min-h-screen bg-gradient-to-b from-slate-50 to-slate-100/60">
       <Sidebar />
-      <div className="flex flex-1 flex-col ml-64">
+      <div className="ml-64 flex flex-1 flex-col">
         <Header />
-        <main className="flex-1 p-6">{children}</main>
+        <main className="mx-auto w-full max-w-[1400px] flex-1 p-6 lg:p-8">{children}</main>
       </div>
     </div>
   )

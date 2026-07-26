@@ -9,8 +9,19 @@ import { Button } from "@/components/ui/button"
 import { formatDate, formatDateTime } from "@/lib/utils"
 import { useState } from "react"
 import { useRouter } from "next/navigation"
-import { CheckCircle, XCircle, AlertTriangle } from "lucide-react"
+import { CheckCircle, XCircle, Building2 } from "lucide-react"
 import type { Organization } from "@/lib/types"
+
+const AVATAR_TONES = [
+  "bg-indigo-100 text-indigo-700", "bg-emerald-100 text-emerald-700", "bg-amber-100 text-amber-700",
+  "bg-sky-100 text-sky-700", "bg-violet-100 text-violet-700", "bg-rose-100 text-rose-700",
+]
+function avatarFor(seed: string) {
+  const initials = (seed || "?").trim().slice(0, 2).toUpperCase()
+  let h = 0
+  for (let i = 0; i < seed.length; i++) h = (h * 31 + seed.charCodeAt(i)) | 0
+  return { initials, tone: AVATAR_TONES[Math.abs(h) % AVATAR_TONES.length] }
+}
 
 export default function OrganizationsPage() {
   const router = useRouter()
@@ -34,9 +45,20 @@ export default function OrganizationsPage() {
   const totalPages = data ? Math.ceil(data.count / 15) : 0
 
   const columns = [
-    { key: "email", header: "Email", render: (o: Organization) => (
-      <div><p className="font-medium">{o.email}</p>                    <p className="text-xs text-slate-600">{o.full_name}</p></div>
-    )},
+    { key: "email", header: "Organization", render: (o: Organization) => {
+      const av = avatarFor(o.full_name || o.email)
+      return (
+        <div className="flex items-center gap-3">
+          <span className={`flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full text-xs font-bold ${av.tone}`}>
+            {av.initials}
+          </span>
+          <div className="min-w-0">
+            <p className="truncate font-medium text-slate-800">{o.email}</p>
+            <p className="truncate text-xs text-slate-500">{o.full_name || "—"}</p>
+          </div>
+        </div>
+      )
+    }},
     { key: "is_active", header: "Status", render: (o: Organization) => <StatusBadge status={o.is_active ? "active" : "inactive"} /> },
     { key: "subscription_plan", header: "Plan", render: (o: Organization) => (
       <span className="text-sm">{o.subscription_plan || "—"}</span>
@@ -52,7 +74,7 @@ export default function OrganizationsPage() {
 
   return (
     <AppShell>
-      <PageHeader title="Organizations" description="Manage all registered organizations"
+      <PageHeader title="Organizations" description="Manage all registered organizations" eyebrow="Accounts" icon={Building2}
         actions={
           <div className="flex gap-2">
             {selected.length > 0 && (

@@ -4,10 +4,11 @@ import { overviewApi, analyticsApi, systemApi } from "@/lib/api"
 import { StatCard } from "@/components/shared/stat-card"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { StatusBadge } from "@/components/shared/status-badge"
+import { PageHeader } from "@/components/shared/page-header"
 import { AppShell } from "@/components/layout/app-shell"
 import { formatCurrency } from "@/lib/utils"
 import {
-  Building2, Users, DollarSign, ShoppingBag, AlertTriangle,
+  Building2, Users, DollarSign, ShoppingBag, AlertTriangle, LayoutDashboard,
   CreditCard, TrendingUp, TrendingDown, Sparkles,
 } from "lucide-react"
 import {
@@ -69,25 +70,27 @@ export default function DashboardPage() {
   return (
     <AppShell>
       <div className="space-y-6">
-        <div>
-          <h1 className="text-2xl font-bold text-slate-900">Dashboard</h1>
-          <p className="mt-1 text-sm text-slate-600">Platform accounts, subscriptions and billing</p>
-        </div>
+        <PageHeader
+          eyebrow="Overview"
+          title="Dashboard"
+          description="Platform accounts, subscriptions and billing at a glance."
+          icon={LayoutDashboard}
+        />
 
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          <StatCard title="Organizations" value={overview?.users.organizations ?? "—"} icon={Building2}
+          <StatCard title="Organizations" value={overview?.users.organizations ?? "—"} icon={Building2} accent="indigo"
             description={`${overview?.billing.new_organizations_this_month ?? 0} new this month`} />
-          <StatCard title="Total Users" value={overview?.users.total ?? "—"} icon={Users}
+          <StatCard title="Total Users" value={overview?.users.total ?? "—"} icon={Users} accent="violet"
             description={`${overview?.users.staff ?? 0} staff`} />
-          <StatCard title="Orders" value={overview?.accounts.orders ?? "—"} icon={ShoppingBag} />
-          <StatCard title="Active Subs" value={overview?.accounts.active_subscriptions ?? "—"} icon={CreditCard}
+          <StatCard title="Orders" value={overview?.accounts.orders ?? "—"} icon={ShoppingBag} accent="sky" />
+          <StatCard title="Active Subs" value={overview?.accounts.active_subscriptions ?? "—"} icon={CreditCard} accent="emerald"
             description={`${overview?.accounts.trialing_subscriptions ?? 0} trialing`} />
-          <StatCard title="MRR" value={`₦${((advanced?.revenue.mrr || 0) / 1e3).toFixed(0)}K`} icon={TrendingUp}
+          <StatCard title="MRR" value={`₦${((advanced?.revenue.mrr || 0) / 1e3).toFixed(0)}K`} icon={TrendingUp} accent="emerald"
             trend={{ value: advanced?.revenue.growth_rate || 0, positive: (advanced?.revenue.growth_rate || 0) >= 0 }} />
-          <StatCard title="ARR" value={`₦${((advanced?.revenue.arr || 0) / 1e6).toFixed(1)}M`} icon={TrendingUp} />
-          <StatCard title="Churn Rate" value={`${advanced?.subscriptions.churn_rate || 0}%`} icon={TrendingDown}
+          <StatCard title="ARR" value={`₦${((advanced?.revenue.arr || 0) / 1e6).toFixed(1)}M`} icon={TrendingUp} accent="indigo" />
+          <StatCard title="Churn Rate" value={`${advanced?.subscriptions.churn_rate || 0}%`} icon={TrendingDown} accent="rose"
             trend={{ value: advanced?.subscriptions.churn_rate || 0, positive: false }} />
-          <StatCard title="Subscription Revenue" value={formatCurrency(overview?.billing.subscription_revenue || 0)} icon={DollarSign}
+          <StatCard title="Subscription Revenue" value={formatCurrency(overview?.billing.subscription_revenue || 0)} icon={DollarSign} accent="amber"
             description={`${formatCurrency(overview?.billing.revenue_this_month || 0)} this month`} />
         </div>
 
