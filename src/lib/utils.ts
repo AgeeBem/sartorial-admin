@@ -58,3 +58,37 @@ export function getStatusColor(status?: string): string {
   }
   return map[status?.toLowerCase() || ""] || "bg-gray-100 text-gray-800 border-gray-200"
 }
+
+export function extractErrorMessage(error: any, fallback = "Something went wrong. Please try again."): string {
+  if (!error) return fallback
+  if (typeof error === "string" && error.trim()) return error
+
+  try {
+    const data = error?.response?.data || (error.data !== undefined ? error.data : error)
+
+    if (typeof data === "string" && data.trim()) return data
+    if (typeof data?.message === "string" && data.message.trim()) return data.message
+    if (typeof data?.detail === "string" && data.detail.trim()) return data.detail
+    if (typeof data?.error === "string" && data.error.trim()) return data.error
+
+    if (typeof error?.message === "string" && error.message.trim() && !error?.response) {
+      return error.message
+    }
+
+    if (data && typeof data === "object" && !Array.isArray(data)) {
+      const parts: string[] = []
+      for (const [key, value] of Object.entries(data)) {
+        if (key === "success" || key === "code") continue
+        if (typeof value === "string") parts.push(key === "detail" || key === "message" ? value : `${key}: ${value}`)
+        else if (Array.isArray(value)) parts.push(`${key}: ${value.join(", ")}`)
+        else if (typeof value === "object" && value !== null) parts.push(`${key}: ${JSON.stringify(value)}`)
+      }
+      if (parts.length > 0) return parts.join(". ")
+    }
+  } catch (err) {
+    console.error("Error formatting error in admin-fe:", err)
+  }
+
+  return fallback
+}
+
